@@ -65,44 +65,40 @@ vim.opt.rtp:prepend(lazypath)
 --  You can also configure plugins after the setup call,
 --    as they will be available in your neovim runtime.
 require('lazy').setup({
-  -- NOTE: First, some plugins that don't require any configuration
-
   {
-    "windwp/nvim-autopairs",
+    'windwp/nvim-autopairs',
     -- Optional dependency
     dependencies = { 'hrsh7th/nvim-cmp' },
     config = function()
-      require("nvim-autopairs").setup {}
+      require('nvim-autopairs').setup {}
       -- If you want to automatically add `(` after selecting a function or method
-      local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-      local cmp = require('cmp')
-      cmp.event:on(
-        'confirm_done',
-        cmp_autopairs.on_confirm_done()
-      )
+      local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
+      local cmp = require 'cmp'
+      cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
     end,
   },
   {
-    "ThePrimeagen/harpoon",
+    'ThePrimeagen/harpoon',
     opts = {
       tabline = true,
-    }
+    },
   },
   {
-    "smoka7/hop.nvim",
+    'smoka7/hop.nvim',
     lazy = false,
     enabled = true,
-    opts = {}
+    opts = {},
   },
-  { "Shatur/neovim-session-manager", opts = {} },
-  { "nvimdev/hlsearch.nvim",         opts = {} },
+  { 'Shatur/neovim-session-manager', opts = {} },
+  { 'nvimdev/hlsearch.nvim', opts = {} },
+  -- :3
   'tpope/vim-surround',
+  -- Detect tabstop and shiftwidth automatically
+  'tpope/vim-sleuth',
   -- Git related plugins
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
 
-  -- Detect tabstop and shiftwidth automatically
-  'tpope/vim-sleuth',
 
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
@@ -140,7 +136,7 @@ require('lazy').setup({
   },
 
   -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim',  opts = {} },
+  { 'folke/which-key.nvim', opts = {} },
   {
     -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
@@ -175,13 +171,17 @@ require('lazy').setup({
             gs.prev_hunk()
           end)
           return '<Ignore>'
-        end, { expr = true, buffer = bufnr, desc = 'Jump to previous hunk' })
+        end, {
+          expr = true,
+          buffer = bufnr,
+          desc = 'Jump to previous hunk',
+        })
       end,
     },
   },
   {
-    "lizlodev/oxocarbon",
-    name = "oxocarbon",
+    'lizlodev/oxocarbon',
+    name = 'oxocarbon',
     priority = 1000,
     enabled = true,
     lazy = false,
@@ -206,17 +206,16 @@ require('lazy').setup({
     },
   },
 
-
   {
-    "nvim-neo-tree/neo-tree.nvim",
-    version = "*",
+    'nvim-neo-tree/neo-tree.nvim',
+    version = '*',
     dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-      "MunifTanjim/nui.nvim",
+      'nvim-lua/plenary.nvim',
+      'nvim-tree/nvim-web-devicons', -- not strictly required, but recommended
+      'MunifTanjim/nui.nvim',
     },
     config = function()
-      require('neo-tree').setup({
+      require('neo-tree').setup {
         filesystem = {
           filtered_items = {
             hide_dotfiles = false,
@@ -224,10 +223,10 @@ require('lazy').setup({
           },
           follow_current_file = {
             enabled = true,
-            leave_dirs_open = false
-          }
-        }
-      })
+            leave_dirs_open = false,
+          },
+        },
+      }
     end,
   },
   {
@@ -262,7 +261,7 @@ require('lazy').setup({
       },
     },
   },
-  { "nvim-telescope/telescope-ui-select.nvim", opts = {} },
+  { 'nvim-telescope/telescope-ui-select.nvim', opts = {} },
   {
     -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
@@ -271,11 +270,14 @@ require('lazy').setup({
     },
     build = ':TSUpdate',
   },
+  {
+    'mhartington/formatter.nvim',
+  },
 
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
-  require 'kickstart.plugins.autoformat',
+  -- require 'kickstart.plugins.autoformat',
   -- require 'kickstart.plugins.debug',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
@@ -291,9 +293,16 @@ require('lazy').setup({
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
 
--- Theme
-vim.cmd.colorscheme "oxocarbon"
+--Removes background from themes
+vim.api.nvim_create_autocmd('ColorScheme', {
+  callback = function()
+    vim.cmd.highlight 'Normal guibg=#000000'
+    vim.cmd.highlight 'NormalNC guibg=#000000'
+  end,
+})
 
+-- Theme
+vim.cmd.colorscheme 'oxocarbon'
 
 -- options
 vim.o.hlsearch = true
@@ -314,8 +323,6 @@ vim.o.completeopt = 'menuone,noselect'
 vim.o.termguicolors = true
 
 -- Highlights
-vim.cmd.highlight "Normal guibg=#000000"
-vim.cmd.highlight "NormalNC guibg=#000000"
 
 -- [[ Basic Keymaps ]]
 -- Keymaps for better default experience
@@ -326,69 +333,83 @@ vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
-
 -- center after scroll
-vim.keymap.set('n', '<C-d>', "<C-d>zz", { silent = true })
-vim.keymap.set('n', '<C-u>', "<C-u>zz", { silent = true })
+vim.keymap.set('n', '<C-d>', '<C-d>zz', { silent = true })
+vim.keymap.set('n', '<C-u>', '<C-u>zz', { silent = true })
 
 --------------------------------------------------------------------------------
 -------------------------------- Plugin Mappings -------------------------------
 --------------------------------------------------------------------------------
-vim.keymap.set('n', "<leader>pp", vim.cmd.Lazy, { silent = true, desc = "Open Lazy" })
-vim.keymap.set('n', "<leader>pm", vim.cmd.Mason, { silent = true, desc = "Open Mason" })
+
+vim.keymap.set('n', '<leader>pp', vim.cmd.Lazy, { silent = true, desc = 'Open Lazy' })
+vim.keymap.set('n', '<leader>pm', vim.cmd.Mason, { silent = true, desc = 'Open Mason' })
 
 -- neotree
-vim.keymap.set('n', "<leader>o", function() vim.cmd("Neotree action=show toggle") end,
-  { silent = true, desc = "Toggles Neotree" })
-vim.keymap.set('n', "<leader>w", vim.cmd.HopWord, { silent = true, desc = "Hops to anyword" })
+vim.keymap.set('n', '<leader>o', function()
+  vim.cmd 'Neotree action=show toggle'
+end, { silent = true, desc = 'Toggles Neotree' })
+vim.keymap.set('n', '<leader>w', vim.cmd.HopWord, { silent = true, desc = 'Hops to anyword' })
 
 -- nvim hop
-vim.keymap.set('n', "<leader>w", require("hop").hint_words, { silent = true, desc = "Hop: Hint Words" })
-
+vim.keymap.set('n', '<leader>w', require('hop').hint_words, { silent = true, desc = 'Hop: Hint Words' })
 
 -- Navigate windows quickly
-vim.keymap.set('n', "<C-h>", function() vim.cmd.wincmd("h") end, { silent = true })
-vim.keymap.set('n', "<C-l>", function() vim.cmd.wincmd("l") end, { silent = true })
-vim.keymap.set('n', "<C-k>", function() vim.cmd.wincmd("k") end, { silent = true })
-vim.keymap.set('n', "<C-j>", function() vim.cmd.wincmd("j") end, { silent = true })
+vim.keymap.set('n', '<C-h>', function()
+  vim.cmd.wincmd 'h'
+end, { silent = true })
+vim.keymap.set('n', '<C-l>', function()
+  vim.cmd.wincmd 'l'
+end, { silent = true })
+vim.keymap.set('n', '<C-k>', function()
+  vim.cmd.wincmd 'k'
+end, { silent = true })
+vim.keymap.set('n', '<C-j>', function()
+  vim.cmd.wincmd 'j'
+end, { silent = true })
 
 -- Write and quit all
-vim.keymap.set('n', "<C-q>", vim.cmd.wqa, { silent = true })
-vim.keymap.set('n', "<C-s>", vim.cmd.w, { silent = true })
+vim.keymap.set('n', '<C-q>', vim.cmd.wqa, { silent = true })
+vim.keymap.set('n', '<C-s>', vim.cmd.w, { silent = true })
 
 --alternate file
-vim.keymap.set('n', "<C-0>", "<C-6>", { silent = true, desc = " go to alternate file " })
+vim.keymap.set('n', '<C-0>', '<C-6>', { silent = true, desc = ' go to alternate file ' })
 
 -- sessions
-vim.keymap.set('n', "<leader>ss", require("session_manager").load_session, { silent = true, desc = "load session" })
-
+vim.keymap.set('n', '<leader>ss', require('session_manager').load_session, { silent = true, desc = 'load session' })
 
 -- Term
-vim.cmd.autocmd("TermOpen * startinsert") -- Starts terminals in insert mode
+vim.cmd.autocmd 'TermOpen * startinsert' -- Starts terminals in insert mode
 
-vim.keymap.set('t', "<C-Space>", "<C-\\><C-n><C-w>h", { silent = true, desc = "get out of term mode" })
-vim.keymap.set('n', "<leader>gg", function() vim.cmd.term("lazygit") end, { silent = true, desc = "opens lazygit" })
+vim.keymap.set('t', '<C-Space>', '<C-\\><C-n><C-w>h', { silent = true, desc = 'get out of term mode' })
+vim.keymap.set('n', '<leader>gg', function()
+  vim.cmd.term 'lazygit'
+end, { silent = true, desc = 'opens lazygit' })
 
 -- harpoooooon
-vim.keymap.set('n', "<A-Tab>", require("harpoon.ui").nav_next, { silent = true, desc = "harpoon : next harpoon mark" })
-vim.keymap.set('n', "<A-S-Tab>", require("harpoon.ui").nav_prev,
-  { silent = true, desc = "harpoon : previous harpoon mark" })
+vim.keymap.set('n', '<A-Tab>', require('harpoon.ui').nav_next, { silent = true, desc = 'harpoon : next harpoon mark' })
+vim.keymap.set('n', '<A-S-Tab>', require('harpoon.ui').nav_prev, { silent = true, desc = 'harpoon : previous harpoon mark' })
 
-vim.keymap.set('n', "<A-w>", require("harpoon.ui").toggle_quick_menu, { silent = true, desc = "harpoon : open menu" })
-vim.keymap.set('n', "<A-q>", require("harpoon.mark").toggle_file, { silent = true, desc = "harpoon : mark file" })
+vim.keymap.set('n', '<A-w>', require('harpoon.ui').toggle_quick_menu, { silent = true, desc = 'harpoon : open menu' })
+vim.keymap.set('n', '<A-q>', require('harpoon.mark').toggle_file, { silent = true, desc = 'harpoon : mark file' })
 
-vim.keymap.set('n', "<A-1>", function() require("harpoon.ui").nav_file(1) end,
-  { silent = true })
-vim.keymap.set('n', "<A-2>", function() require("harpoon.ui").nav_file(2) end,
-  { silent = true })
-vim.keymap.set('n', "<A-3>", function() require("harpoon.ui").nav_file(3) end,
-  { silent = true })
-vim.keymap.set('n', "<A-4>", function() require("harpoon.ui").nav_file(4) end,
-  { silent = true })
-vim.keymap.set('n', "<A-5>", function() require("harpoon.ui").nav_file(5) end,
-  { silent = true })
-vim.keymap.set('n', "<A-6>", function() require("harpoon.ui").nav_file(6) end,
-  { silent = true })
+vim.keymap.set('n', '<A-1>', function()
+  require('harpoon.ui').nav_file(1)
+end, { silent = true })
+vim.keymap.set('n', '<A-2>', function()
+  require('harpoon.ui').nav_file(2)
+end, { silent = true })
+vim.keymap.set('n', '<A-3>', function()
+  require('harpoon.ui').nav_file(3)
+end, { silent = true })
+vim.keymap.set('n', '<A-4>', function()
+  require('harpoon.ui').nav_file(4)
+end, { silent = true })
+vim.keymap.set('n', '<A-5>', function()
+  require('harpoon.ui').nav_file(5)
+end, { silent = true })
+vim.keymap.set('n', '<A-6>', function()
+  require('harpoon.ui').nav_file(6)
+end, { silent = true })
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
@@ -406,10 +427,10 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
   defaults = {
-    sorting_strategy = "ascending",
-    layout_strategy = "horizontal",
+    sorting_strategy = 'ascending',
+    layout_strategy = 'horizontal',
     layout_config = {
-      horizontal = { prompt_position = "top", anchor = "top" }
+      horizontal = { prompt_position = 'top', anchor = 'top' },
     },
     mappings = {
       i = {
@@ -420,8 +441,7 @@ require('telescope').setup {
   },
 }
 
-
-require("telescope").load_extension("ui-select")
+require('telescope').load_extension 'ui-select'
 
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
@@ -445,6 +465,7 @@ vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { de
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
+vim.keymap.set('n', '<leader>st', require('telescope.builtin').colorscheme, { desc = '[S]earch [T]hemes' })
 
 vim.keymap.set('n', '<leader>sc', require('telescope.builtin').commands, { desc = '[S]earch [C]ommands' })
 vim.keymap.set('n', '<leader>sk', require('telescope.builtin').keymaps, { desc = '[S]earch [K]eymaps' })
@@ -459,8 +480,20 @@ vim.defer_fn(function()
     sync_install = false,
     ignore_install = {},
     -- Add languages to be installed here that you want installed for treesitter
-    ensure_installed = { 'c', 'cpp', 'go', 'lua', 'python', 'rust', 'tsx', 'javascript', 'typescript', 'vimdoc', 'vim',
-      'bash' },
+    ensure_installed = {
+      'c',
+      'cpp',
+      'go',
+      'lua',
+      'python',
+      'rust',
+      'tsx',
+      'javascript',
+      'typescript',
+      'vimdoc',
+      'vim',
+      'bash',
+    },
 
     -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
     auto_install = true,
@@ -561,6 +594,8 @@ local on_attach = function(_, bufnr)
   -- Show Signature on L
   nmap('L', vim.lsp.buf.signature_help, 'Signature Documentation')
 
+  --Format
+  nmap('<leader>f', vim.cmd.Format, 'Format')
   -- Lesser used LSP functionality
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
   nmap('<leader>Wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
@@ -570,9 +605,9 @@ local on_attach = function(_, bufnr)
   end, '[W]orkspace [L]ist Folders')
 
   -- Create a command `:Format` local to the LSP buffer
-  vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
-    vim.lsp.buf.format()
-  end, { desc = 'Format current buffer with LSP' })
+  -- vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
+  --   vim.lsp.buf.format()
+  -- end, { desc = 'Format current buffer with LSP' })
 end
 
 -- document existing key chains
@@ -592,6 +627,33 @@ require('which-key').register {
 require('mason').setup()
 require('mason-lspconfig').setup()
 
+require('formatter').setup {
+  logging = true,
+  cwd = function()
+    vim.print 'FORMATTER CWD'
+    local workspace_root = vim.lsp.buf.list_workspace_folders()[1]
+
+    return workspace_root
+  end,
+  filetype = {
+    javascript = {
+      require('formatter.filetypes.javascript').prettierd,
+    },
+    javascriptreact = {
+      require('formatter.filetypes.javascriptreact').prettierd,
+    },
+    typescript = {
+      require('formatter.filetypes.typescript').prettierd,
+    },
+    typescriptreact = {
+      require('formatter.filetypes.typescriptreact').prettierd,
+    },
+    lua = {
+      require('formatter.filetypes.lua').stylua,
+    },
+  },
+}
+
 -- Enable the following language servers
 --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
 --
@@ -606,7 +668,7 @@ local servers = {
   -- pyright = {},
   -- rust_analyzer = {},
   tsserver = {
-    enablePromptUseWorkspaceTsdk = true
+    enablePromptUseWorkspaceTsdk = true,
   },
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
 

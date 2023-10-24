@@ -188,7 +188,6 @@ require('lazy').setup({
     'navarasu/onedark.nvim',
     priority = 1000,
   },
-
   {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
@@ -212,17 +211,17 @@ require('lazy').setup({
       'MunifTanjim/nui.nvim',
     },
     opts = {
-        filesystem = {
-          filtered_items = {
-            hide_dotfiles = false,
-            hide_hidden = false,
-          },
-          follow_current_file = {
-            enabled = true,
-            leave_dirs_open = false,
-          },
+      filesystem = {
+        filtered_items = {
+          hide_dotfiles = false,
+          hide_hidden = false,
         },
-      }
+        follow_current_file = {
+          enabled = true,
+          leave_dirs_open = false,
+        },
+      },
+    },
   },
   {
     -- Add indentation guides even on blank lines
@@ -288,7 +287,6 @@ require('lazy').setup({
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
 
-
 vim.g.transparent = true
 --Removes background from themes
 vim.api.nvim_create_autocmd('ColorScheme', {
@@ -315,9 +313,8 @@ end, { silent = true, desc = 'Toggle Background' })
 -- Toggle Transparency
 vim.keymap.set('n', '<leader>ut', function()
   vim.g.transparent = not vim.g.transparent
-  vim.print('transparent : '.. vim.inspect (vim.g.transparent))
+  vim.print('transparent : ' .. vim.inspect(vim.g.transparent))
 end, { silent = true, desc = 'Toggle transparency' })
-
 
 -- Theme
 vim.cmd.colorscheme 'oxocarbon'
@@ -397,10 +394,18 @@ vim.keymap.set('n', '<leader>ss', require('session_manager').load_session, { sil
 -- Term
 vim.cmd.autocmd 'TermOpen * startinsert' -- Starts terminals in insert mode
 
+-- Adds Ctrl + Space as a Mapping to get out of term Mode
 vim.keymap.set('t', '<C-Space>', '<C-\\><C-n><C-w>h', { silent = true, desc = 'get out of term mode' })
 vim.keymap.set('n', '<leader>gg', function()
   vim.cmd.term 'lazygit'
 end, { silent = true, desc = 'opens lazygit' })
+
+vim.keymap.set('n', '<leader>tv', function()
+  vim.cmd ':vsplit +:term'
+end, { silent = true, desc = 'terminal in [V]ertical split' })
+vim.keymap.set('n', '<leader>ts', function()
+  vim.cmd 'split +:term'
+end, { silent = true, desc = 'terminal in horizontal [S]plit' })
 
 -- harpoooooon
 vim.keymap.set('n', '<A-Tab>', require('harpoon.ui').nav_next, { silent = true, desc = 'harpoon : next harpoon mark' })
@@ -472,6 +477,9 @@ pcall(require('telescope').load_extension, 'fzf')
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
+vim.keymap.set('n', '<leader>"', require('telescope.builtin').registers, { desc = 'Find in Registers' })
+vim.keymap.set('n', "<leader>'", require('telescope.builtin').marks, { desc = 'Find in Marks' })
+
 vim.keymap.set('n', '<leader>/', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
@@ -647,6 +655,7 @@ require('which-key').register {
   ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
   ['<leader>W'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
   ['<leader>u'] = { name = '[U]i', _ = 'which_key_ignore' },
+  ['<leader>t'] = { name = '[T]eminal', _ = 'which_key_ignore' },
   ['<C-G>'] = { name = 'print filename', _ = 'which_key_ignore' },
 }
 

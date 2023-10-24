@@ -331,6 +331,12 @@ vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = tr
 vim.keymap.set('n', '<C-d>', "<C-d>zz", { silent = true })
 vim.keymap.set('n', '<C-u>', "<C-u>zz", { silent = true })
 
+--------------------------------------------------------------------------------
+-------------------------------- Plugin Mappings -------------------------------
+--------------------------------------------------------------------------------
+vim.keymap.set('n', "<leader>pp", vim.cmd.Lazy, { silent = true, desc = "Open Lazy" })
+vim.keymap.set('n', "<leader>pm", vim.cmd.Mason, { silent = true, desc = "Open Mason" })
+
 -- neotree
 vim.keymap.set('n', "<leader>o", function() vim.cmd("Neotree action=show toggle") end,
   { silent = true, desc = "Toggles Neotree" })
@@ -339,8 +345,6 @@ vim.keymap.set('n', "<leader>w", vim.cmd.HopWord, { silent = true, desc = "Hops 
 -- nvim hop
 vim.keymap.set('n', "<leader>w", require("hop").hint_words, { silent = true, desc = "Hop: Hint Words" })
 
-vim.keymap.set('n', "<leader>pp", vim.cmd.Lazy, { silent = true, desc = "Open Lazy" })
-vim.keymap.set('n', "<leader>pm", vim.cmd.Mason, { silent = true, desc = "Open Mason" })
 
 -- Navigate windows quickly
 vim.keymap.set('n', "<C-h>", function() vim.cmd.wincmd("h") end, { silent = true })
@@ -357,6 +361,13 @@ vim.keymap.set('n', "<C-0>", "<C-6>", { silent = true, desc = " go to alternate 
 
 -- sessions
 vim.keymap.set('n', "<leader>ss", require("session_manager").load_session, { silent = true, desc = "load session" })
+
+
+-- Term
+vim.cmd.autocmd("TermOpen * startinsert") -- Starts terminals in insert mode
+
+vim.keymap.set('t', "<C-Space>", "<C-\\><C-n><C-w>h", { silent = true, desc = "get out of term mode" })
+vim.keymap.set('n', "<leader>gg", function() vim.cmd.term("lazygit") end, { silent = true, desc = "opens lazygit" })
 
 -- harpoooooon
 vim.keymap.set('n', "<A-Tab>", require("harpoon.ui").nav_next, { silent = true, desc = "harpoon : next harpoon mark" })

@@ -1,6 +1,6 @@
 --[[
-
-=====================================================================
+s
+/====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
 
@@ -86,8 +86,6 @@ require('lazy').setup({
     "ThePrimeagen/harpoon",
     opts = {
       tabline = true,
-      tabline_prefix = "   ",
-      tabline_suffix = "   ",
     }
   },
   {
@@ -96,7 +94,8 @@ require('lazy').setup({
     enabled = true,
     opts = {}
   },
-  { "nvimdev/hlsearch.nvim", opts = {} },
+  { "Shatur/neovim-session-manager", opts = {} },
+  { "nvimdev/hlsearch.nvim",         opts = {} },
   'tpope/vim-surround',
   -- Git related plugins
   'tpope/vim-fugitive',
@@ -263,7 +262,7 @@ require('lazy').setup({
       },
     },
   },
-
+  { "nvim-telescope/telescope-ui-select.nvim", opts = {} },
   {
     -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
@@ -294,49 +293,27 @@ require('lazy').setup({
 
 -- Theme
 vim.cmd.colorscheme "oxocarbon"
--- Set highlight on search
-vim.o.hlsearch = true
 
--- Make line numbers default
+
+-- options
+vim.o.hlsearch = true
 vim.o.number = true
 vim.o.relativenumber = true
-
---scroll off
 vim.o.scrolloff = 8
 vim.o.sidescrolloff = 16
-
--- Enable mouse mode
 vim.o.mouse = 'a'
-
-
--- Sync clipboard between OS and Neovim.
---  Remove this option if you want your OS clipboard to remain independent.
---  See `:help 'clipboard'`
 vim.o.clipboard = 'unnamedplus'
-
--- Enable break indent
 vim.o.breakindent = true
-
--- Save undo history
 vim.o.undofile = true
-
--- Case-insensitive searching UNLESS \C or capital in search
 vim.o.ignorecase = true
 vim.o.smartcase = true
-
--- Keep signcolumn on by default
 vim.wo.signcolumn = 'yes'
-
--- Decrease update time
 vim.o.updatetime = 250
 vim.o.timeoutlen = 300
-
-
--- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
-
--- NOTE: You should make sure your terminal supports this
 vim.o.termguicolors = true
+
+-- Highlights
 vim.cmd.highlight "Normal guibg=#000000"
 vim.cmd.highlight "NormalNC guibg=#000000"
 
@@ -377,6 +354,9 @@ vim.keymap.set('n', "<C-s>", vim.cmd.w, { silent = true })
 
 --alternate file
 vim.keymap.set('n', "<C-0>", "<C-6>", { silent = true, desc = " go to alternate file " })
+
+-- sessions
+vim.keymap.set('n', "<leader>ss", require("session_manager").load_session, { silent = true, desc = "load session" })
 
 -- harpoooooon
 vim.keymap.set('n', "<A-Tab>", require("harpoon.ui").nav_next, { silent = true, desc = "harpoon : next harpoon mark" })
@@ -429,9 +409,13 @@ require('telescope').setup {
   },
 }
 
+
+require("telescope").load_extension("ui-select")
+
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
 
+-- Telescope Mappings
 -- See `:help telescope.builtin`
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
@@ -610,7 +594,9 @@ local servers = {
   -- gopls = {},
   -- pyright = {},
   -- rust_analyzer = {},
-  -- tsserver = {},
+  tsserver = {
+    enablePromptUseWorkspaceTsdk = true
+  },
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
 
   lua_ls = {
@@ -650,6 +636,7 @@ mason_lspconfig.setup_handlers {
 -- See `:help cmp`
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
+
 require('luasnip.loaders.from_vscode').lazy_load()
 luasnip.config.setup {}
 

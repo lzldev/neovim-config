@@ -69,8 +69,9 @@ require('lazy').setup({
     'windwp/nvim-autopairs',
     -- Optional dependency
     dependencies = { 'hrsh7th/nvim-cmp' },
-    config = function()
-      require('nvim-autopairs').setup {}
+    opts = {},
+    config = function(_, opts)
+      require('nvim-autopairs').setup(opts)
       -- If you want to automatically add `(` after selecting a function or method
       local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
       local cmp = require 'cmp'
@@ -85,19 +86,19 @@ require('lazy').setup({
   },
   {
     'smoka7/hop.nvim',
-    lazy = false,
-    enabled = true,
     opts = {},
   },
   { 'Shatur/neovim-session-manager', opts = {} },
   { 'nvimdev/hlsearch.nvim', opts = {} },
-  -- :3
-  'tpope/vim-surround',
+  -- "gc" to comment visual regions/lines
+  { 'numToStr/Comment.nvim', opts = {} },
+  -- <uwu>Surround</uwu>
+  { 'tpope/vim-surround' },
   -- Detect tabstop and shiftwidth automatically
-  'tpope/vim-sleuth',
+  { 'tpope/vim-sleuth' },
   -- Git related plugins
-  'tpope/vim-fugitive',
-  'tpope/vim-rhubarb',
+  -- 'tpope/vim-fugitive', -- :Git does something i think
+  -- 'tpope/vim-rhubarb', -- Open Github URLs in vim
 
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
@@ -191,6 +192,7 @@ require('lazy').setup({
   {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
+    lazy = false,
     -- See `:help lualine.txt`
     opts = {
       options = {
@@ -201,9 +203,9 @@ require('lazy').setup({
       },
     },
   },
-
   {
     'nvim-neo-tree/neo-tree.nvim',
+    lazy = true,
     version = '*',
     dependencies = {
       'nvim-lua/plenary.nvim',
@@ -232,13 +234,38 @@ require('lazy').setup({
     opts = {},
   },
 
-  -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
-
   -- Fuzzy Finder (files, lsp, etc)
   {
     'nvim-telescope/telescope.nvim',
+    lazy = true,
     branch = '0.1.x',
+    opts = {
+      pickers = {
+        find_files = {
+          hidden = true,
+        },
+      },
+      defaults = {
+        sorting_strategy = 'ascending',
+        layout_strategy = 'horizontal',
+        layout_config = {
+          horizontal = { prompt_position = 'top', anchor = 'top' },
+        },
+        mappings = {
+          i = {
+            ['<C-u>'] = false,
+            ['<C-d>'] = false,
+          },
+        },
+      },
+    },
+    config = function(_, opts)
+      require('telescope').setup(opts)
+      -- Enable telescope fzf native, if installed
+      pcall(require('telescope').load_extension, 'fzf')
+
+      require('telescope').load_extension 'ui-select'
+    end,
     dependencies = {
       'nvim-lua/plenary.nvim',
       -- Fuzzy Finder Algorithm which requires local dependencies to be built.
@@ -246,6 +273,7 @@ require('lazy').setup({
       -- requirements installed.
       {
         'nvim-telescope/telescope-fzf-native.nvim',
+        lazy = true,
         -- NOTE: If you are having trouble with this installation,
         --       refer to the README for telescope-fzf-native for more instructions.
         build = 'make',
@@ -255,7 +283,7 @@ require('lazy').setup({
       },
     },
   },
-  { 'nvim-telescope/telescope-ui-select.nvim', opts = {} },
+  { 'nvim-telescope/telescope-ui-select.nvim', lazy = true, opts = {} },
   {
     -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
@@ -281,13 +309,36 @@ require('lazy').setup({
   --
   --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
   -- { import = 'custom.plugins' },
-}, {})
+}, {
+  defaults = {
+    -- lazy = true, -- lazy load by default
+  },
+  performance = {
+    cache = {
+      enabled = true,
+    },
+  },
+  -- disables regular vim plugins
+  disabled_plugins = {
+    'gzip',
+    'matchit',
+    'matchparen',
+    'netrwPlugin',
+    'tarPlugin',
+    'tohtml',
+    'tutor',
+    'zipPlugin',
+  },
+  -- profiling = {
+  --   loader = true,
+  --   require = true,
+  -- },
+})
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
 
-vim.g.transparent = true
 --Removes background from themes
 vim.api.nvim_create_autocmd('ColorScheme', {
   callback = function()
@@ -316,9 +367,10 @@ vim.keymap.set('n', '<leader>ut', function()
   vim.print('transparent : ' .. vim.inspect(vim.g.transparent))
 end, { silent = true, desc = 'Toggle transparency' })
 
--- Theme
-vim.cmd.colorscheme 'oxocarbon'
--- options
+-- custom options
+vim.g.transparent = true -- removes background on colorschemeload
+
+-- vim options
 vim.o.hlsearch = true
 vim.o.number = true
 vim.o.relativenumber = true
@@ -335,6 +387,9 @@ vim.o.updatetime = 250
 vim.o.timeoutlen = 300
 vim.o.completeopt = 'menuone,noselect'
 vim.o.termguicolors = true
+
+-- Theme
+vim.cmd.colorscheme 'oxocarbon'
 
 -- Highlights
 
@@ -359,8 +414,18 @@ vim.keymap.set('n', '<leader>pp', vim.cmd.Lazy, { silent = true, desc = 'Open La
 vim.keymap.set('n', '<leader>pm', vim.cmd.Mason, { silent = true, desc = 'Open Mason' })
 
 -- neotree
+-- vim.keymap.set('n', '<leader>o', function()
+--   vim.cmd 'Neotree action=show toggle'
+-- end, { silent = true, desc = 'Toggles Neotree' })
 vim.keymap.set('n', '<leader>o', function()
-  vim.cmd 'Neotree action=show toggle'
+  local reveal_file = require('utils').get_reveal_file_path()
+
+  require('neo-tree.command').execute {
+    action = 'show',
+    toggle = true,
+    reveal_file = reveal_file,
+    reveal_force_cwd = true,
+  }
 end, { silent = true, desc = 'Toggles Neotree' })
 vim.keymap.set('n', '<leader>w', vim.cmd.HopWord, { silent = true, desc = 'Hops to anyword' })
 
@@ -447,31 +512,31 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
-require('telescope').setup {
-  pickers = {
-    find_files = {
-      hidden = true,
-    },
-  },
-  defaults = {
-    sorting_strategy = 'ascending',
-    layout_strategy = 'horizontal',
-    layout_config = {
-      horizontal = { prompt_position = 'top', anchor = 'top' },
-    },
-    mappings = {
-      i = {
-        ['<C-u>'] = false,
-        ['<C-d>'] = false,
-      },
-    },
-  },
-}
-
-require('telescope').load_extension 'ui-select'
-
--- Enable telescope fzf native, if installed
-pcall(require('telescope').load_extension, 'fzf')
+-- require('telescope').setup {
+--   pickers = {
+--     find_files = {
+--       hidden = true,
+--     },
+--   },
+--   defaults = {
+--     sorting_strategy = 'ascending',
+--     layout_strategy = 'horizontal',
+--     layout_config = {
+--       horizontal = { prompt_position = 'top', anchor = 'top' },
+--     },
+--     mappings = {
+--       i = {
+--         ['<C-u>'] = false,
+--         ['<C-d>'] = false,
+--       },
+--     },
+--   },
+-- }
+--
+-- require('telescope').load_extension 'ui-select'
+--
+-- -- Enable telescope fzf native, if installed
+-- pcall(require('telescope').load_extension, 'fzf')
 
 -- Telescope Mappings
 -- See `:help telescope.builtin`
@@ -614,8 +679,8 @@ local on_attach = function(_, bufnr)
     vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
   end
 
-  nmap('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-  nmap('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+  nmap('<leader>lr', vim.lsp.buf.rename, '[R]ename')
+  nmap('<leader>la', vim.lsp.buf.code_action, 'Code [A]ction')
 
   nmap('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
   nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
@@ -656,6 +721,7 @@ require('which-key').register {
   ['<leader>W'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
   ['<leader>u'] = { name = '[U]i', _ = 'which_key_ignore' },
   ['<leader>t'] = { name = '[T]eminal', _ = 'which_key_ignore' },
+  ['<leader>l'] = { name = '[L]SP', _ = 'which_key_ignore' },
   ['<C-G>'] = { name = 'print filename', _ = 'which_key_ignore' },
 }
 
@@ -750,6 +816,7 @@ local luasnip = require 'luasnip'
 require('luasnip.loaders.from_vscode').lazy_load()
 luasnip.config.setup {}
 
+---@diagnostic disable-next-line: missing-fields
 cmp.setup {
   snippet = {
     expand = function(args)
@@ -793,5 +860,3 @@ cmp.setup {
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
---
---

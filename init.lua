@@ -99,7 +99,6 @@ require('lazy').setup({
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
 
-
   -- NOTE: This is where your plugins related to LSP can be installed.
   --  The configuration is done below. Search for lspconfig to find it below.
   {
@@ -183,8 +182,6 @@ require('lazy').setup({
     'lizlodev/oxocarbon',
     name = 'oxocarbon',
     priority = 1000,
-    enabled = true,
-    lazy = false,
   },
   {
     -- Theme inspired by Atom
@@ -214,8 +211,7 @@ require('lazy').setup({
       'nvim-tree/nvim-web-devicons', -- not strictly required, but recommended
       'MunifTanjim/nui.nvim',
     },
-    config = function()
-      require('neo-tree').setup {
+    opts = {
         filesystem = {
           filtered_items = {
             hide_dotfiles = false,
@@ -227,7 +223,6 @@ require('lazy').setup({
           },
         },
       }
-    end,
   },
   {
     -- Add indentation guides even on blank lines
@@ -293,17 +288,39 @@ require('lazy').setup({
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
 
+
+vim.g.transparent = true
 --Removes background from themes
 vim.api.nvim_create_autocmd('ColorScheme', {
   callback = function()
+    if not vim.g.transparent then
+      return nil
+    end
+
     vim.cmd.highlight 'Normal guibg=#000000'
     vim.cmd.highlight 'NormalNC guibg=#000000'
   end,
 })
 
+-- Toggle background
+vim.keymap.set('n', '<leader>ub', function()
+  if vim.o.background == 'dark' then
+    vim.o.background = 'light'
+  elseif vim.o.background == 'light' then
+    vim.o.background = 'dark'
+  end
+  vim.print(vim.o.background)
+end, { silent = true, desc = 'Toggle Background' })
+
+-- Toggle Transparency
+vim.keymap.set('n', '<leader>ut', function()
+  vim.g.transparent = not vim.g.transparent
+  vim.print('transparent : '.. vim.inspect (vim.g.transparent))
+end, { silent = true, desc = 'Toggle transparency' })
+
+
 -- Theme
 vim.cmd.colorscheme 'oxocarbon'
-
 -- options
 vim.o.hlsearch = true
 vim.o.number = true
@@ -426,6 +443,11 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
+  pickers = {
+    find_files = {
+      hidden = true,
+    },
+  },
   defaults = {
     sorting_strategy = 'ascending',
     layout_strategy = 'horizontal',
@@ -460,6 +482,11 @@ end, { desc = '[/] Fuzzily search in current buffer' })
 
 vim.keymap.set('n', '<leader>gf', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
 vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<leader>sF', function()
+  require('telescope.builtin').find_files {
+    no_ignore = false,
+  }
+end, { desc = '[S]earch All [F]ile' })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[S]earch current [W]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
@@ -619,6 +646,7 @@ require('which-key').register {
   ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
   ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
   ['<leader>W'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
+  ['<leader>u'] = { name = '[U]i', _ = 'which_key_ignore' },
   ['<C-G>'] = { name = 'print filename', _ = 'which_key_ignore' },
 }
 

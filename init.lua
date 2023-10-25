@@ -65,6 +65,7 @@ vim.opt.rtp:prepend(lazypath)
 --  You can also configure plugins after the setup call,
 --    as they will be available in your neovim runtime.
 require('lazy').setup({
+  { import = 'ui' },
   { 'wakatime/vim-wakatime' },
   { 'Shatur/neovim-session-manager', opts = {} },
   { 'nvimdev/hlsearch.nvim', opts = {} },
@@ -189,20 +190,7 @@ require('lazy').setup({
     priority = 1000,
   },
   {
-    -- Set lualine as statusline
-    'nvim-lualine/lualine.nvim',
-    lazy = false,
-    -- See `:help lualine.txt`
-    opts = {
-      options = {
-        icons_enabled = true,
-        theme = 'auto',
-        component_separators = '|',
-        section_separators = '',
-      },
-    },
-  },
-  {
+
     'nvim-neo-tree/neo-tree.nvim',
     lazy = true,
     version = '*',
@@ -316,18 +304,20 @@ require('lazy').setup({
     cache = {
       enabled = true,
     },
+    rtp = {
+      disabled_plugins = {
+        'gzip',
+        'matchit',
+        'matchparen',
+        'netrwPlugin',
+        'tarPlugin',
+        'tohtml',
+        'tutor',
+        'zipPlugin',
+      },
+    },
   },
   -- disables regular vim plugins
-  disabled_plugins = {
-    'gzip',
-    'matchit',
-    'matchparen',
-    'netrwPlugin',
-    'tarPlugin',
-    'tohtml',
-    'tutor',
-    'zipPlugin',
-  },
   -- profiling = {
   --   loader = true,
   --   require = true,
@@ -471,9 +461,12 @@ vim.keymap.set('n', '<leader>ts', function()
   vim.cmd 'split +:term'
 end, { silent = true, desc = 'terminal in horizontal [S]plit' })
 
--- harpoooooon
-vim.keymap.set('n', '<A-Tab>', require('harpoon.ui').nav_next, { silent = true, desc = 'harpoon : next harpoon mark' })
-vim.keymap.set('n', '<A-S-Tab>', require('harpoon.ui').nav_prev, { silent = true, desc = 'harpoon : previous harpoon mark' })
+-- Buffers
+vim.keymap.set('n', '<A-Tab>', vim.cmd.bn, { silent = true, desc = 'Next Buffer' })
+vim.keymap.set('n', '<A-S-Tab>', vim.cmd.bp, { silent = true, desc = 'Previous Buffer' })
+
+vim.keymap.set('n', '<leader>bc', vim.cmd.bw, { silent = true, desc = 'Wipeout Buffer' })
+vim.keymap.set('n', '<leader>bl', function() vim.cmd(".+,$bw") end, { silent = true, desc = 'Wipeout Buffer' })
 
 vim.keymap.set('n', '<A-w>', require('harpoon.ui').toggle_quick_menu, { silent = true, desc = 'harpoon : open menu' })
 vim.keymap.set('n', '<A-q>', require('harpoon.mark').toggle_file, { silent = true, desc = 'harpoon : mark file' })
@@ -716,7 +709,7 @@ end
 
 -- document existing key chains
 require('which-key').register {
-  ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
+  -- ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
   ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
   ['<leader>g'] = { name = '[G]it', _ = 'which_key_ignore' },
   ['<leader>h'] = { name = 'More git', _ = 'which_key_ignore' },
@@ -724,6 +717,7 @@ require('which-key').register {
   ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
   ['<leader>W'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
   ['<leader>u'] = { name = '[U]i', _ = 'which_key_ignore' },
+  ['<leader>b'] = { name = '[B]uffers', _ = 'which_key_ignore' },
   ['<leader>t'] = { name = '[T]eminal', _ = 'which_key_ignore' },
   ['<leader>l'] = { name = '[L]SP', _ = 'which_key_ignore' },
   ['<C-G>'] = { name = 'print filename', _ = 'which_key_ignore' },

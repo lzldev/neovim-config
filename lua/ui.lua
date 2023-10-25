@@ -1,5 +1,20 @@
 return {
   {
+    'shortcuts/no-neck-pain.nvim',
+    opts = {
+      width = 110,
+      buffers = {
+        colors = {
+          blend = 10
+        },
+        wo = {
+          fillchars = 'eob: ',
+        },
+      },
+    },
+  },
+  { 'SmiteshP/nvim-navic', opts = {lsp ={auto_attach = true}}, after = 'nvim-lualine/lualine.nvim' },
+  {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
     lazy = false,
@@ -8,7 +23,7 @@ return {
     opts = {
       options = {
         icons_enabled = true,
-        theme = 'auto',
+        -- theme = 'auto',
         component_separators = '|',
         section_separators = '',
         globalstatus = true,
@@ -19,7 +34,7 @@ return {
             'buffers',
             mode = 4,
             buffers_color = {
-              active = 'Underlined'
+              active = 'Underlined',
             },
             use_mode_colors = true,
           },
@@ -31,10 +46,9 @@ return {
         lualine_z = { 'tabs' },
       },
       winbar = {
-        lualine_a = {},
-        lualine_b = {},
+        lualine_a = {{ 'navic' , color_correction = 'dynamic'}},
         lualine_c = {},
-        lualine_x = {},
+        lualine_x = {{function() return 'miau ~.~' end}},
         lualine_y = { 'branch' },
         lualine_z = { 'diff' },
       },

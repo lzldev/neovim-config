@@ -356,10 +356,18 @@ vim.keymap.set('n', '<leader>ut', function()
   vim.print('transparent : ' .. vim.inspect(vim.g.transparent))
 end, { silent = true, desc = 'Toggle transparency' })
 
+
+-- Toggle Wrap
+vim.keymap.set('n', '<leader>uw', function()
+  vim.wo.wrap = not vim.wo.wrap
+  vim.print('Wrap : ' .. vim.inspect(vim.wo.wrap))
+end, { silent = true, desc = 'Toggle wrap' })
+
 -- custom options
 vim.g.transparent = true -- removes background on colorschemeload
 
 -- vim options
+vim.o.cmdheight = 0
 vim.o.hlsearch = true
 vim.o.number = true
 vim.o.relativenumber = true
@@ -387,6 +395,8 @@ vim.cmd.colorscheme 'oxocarbon'
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
+vim.keymap.set('n', '<C-0>', '<C-6>', { silent = true, desc = ' go to alternate file ' }) --alternate file
+
 -- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
@@ -395,31 +405,9 @@ vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = tr
 vim.keymap.set('n', '<C-d>', '<C-d>zz', { silent = true })
 vim.keymap.set('n', '<C-u>', '<C-u>zz', { silent = true })
 
---------------------------------------------------------------------------------
--------------------------------- Plugin Mappings -------------------------------
---------------------------------------------------------------------------------
-
-vim.keymap.set('n', '<leader>pp', vim.cmd.Lazy, { silent = true, desc = 'Open Lazy' })
-vim.keymap.set('n', '<leader>pm', vim.cmd.Mason, { silent = true, desc = 'Open Mason' })
-
--- neotree
--- vim.keymap.set('n', '<leader>o', function()
---   vim.cmd 'Neotree action=show toggle'
--- end, { silent = true, desc = 'Toggles Neotree' })
-vim.keymap.set('n', '<leader>o', function()
-  local reveal_file = require('utils').get_reveal_file_path()
-
-  require('neo-tree.command').execute {
-    action = 'show',
-    toggle = true,
-    reveal_file = reveal_file,
-    reveal_force_cwd = true,
-  }
-end, { silent = true, desc = 'Toggles Neotree' })
-vim.keymap.set('n', '<leader>w', vim.cmd.HopWord, { silent = true, desc = 'Hops to anyword' })
-
--- nvim hop
-vim.keymap.set('n', '<leader>w', require('hop').hint_words, { silent = true, desc = 'Hop: Hint Words' })
+-- Write and quit all
+vim.keymap.set('n', '<C-q>', vim.cmd.wqa, { silent = true })
+vim.keymap.set('n', '<C-s>', vim.cmd.w, { silent = true })
 
 -- Navigate windows quickly
 vim.keymap.set('n', '<C-h>', function()
@@ -435,21 +423,12 @@ vim.keymap.set('n', '<C-j>', function()
   vim.cmd.wincmd 'j'
 end, { silent = true })
 
--- Write and quit all
-vim.keymap.set('n', '<C-q>', vim.cmd.wqa, { silent = true })
-vim.keymap.set('n', '<C-s>', vim.cmd.w, { silent = true })
-
---alternate file
-vim.keymap.set('n', '<C-0>', '<C-6>', { silent = true, desc = ' go to alternate file ' })
-
--- sessions
-vim.keymap.set('n', '<leader>ss', require('session_manager').load_session, { silent = true, desc = 'load session' })
-
--- Term
+-- Terminal
 vim.cmd.autocmd 'TermOpen * startinsert' -- Starts terminals in insert mode
 
 -- Adds Ctrl + Space as a Mapping to get out of term Mode
 vim.keymap.set('t', '<C-Space>', '<C-\\><C-n><C-w>h', { silent = true, desc = 'get out of term mode' })
+
 vim.keymap.set('n', '<leader>gg', function()
   vim.cmd.term 'lazygit'
 end, { silent = true, desc = 'opens lazygit' })
@@ -466,7 +445,39 @@ vim.keymap.set('n', '<A-Tab>', vim.cmd.bn, { silent = true, desc = 'Next Buffer'
 vim.keymap.set('n', '<A-S-Tab>', vim.cmd.bp, { silent = true, desc = 'Previous Buffer' })
 
 vim.keymap.set('n', '<leader>bc', vim.cmd.bw, { silent = true, desc = 'Wipeout Buffer' })
-vim.keymap.set('n', '<leader>bl', function() vim.cmd(".+,$bw") end, { silent = true, desc = 'Wipeout Buffer' })
+-- Wipes everything to the right
+vim.keymap.set('n', '<leader>bl', function()
+  vim.cmd '.+,$bw'
+end, { silent = true, desc = 'Wipes all buffers to the right' })
+
+--------------------------------------------------------------------------------
+-------------------------------- Plugin Mappings -------------------------------
+--------------------------------------------------------------------------------
+
+vim.keymap.set('n', '<leader>uz', vim.cmd.NoNeckPain, { silent = true, desc = 'Center Window' })
+
+vim.keymap.set('n', '<leader>pp', vim.cmd.Lazy, { silent = true, desc = 'Open Lazy' })
+vim.keymap.set('n', '<leader>pm', vim.cmd.Mason, { silent = true, desc = 'Open Mason' })
+
+-- Neo-tree Reveal
+vim.keymap.set('n', '<leader>o', function()
+  local reveal_file = require('utils').get_reveal_file_path()
+
+  require('neo-tree.command').execute {
+    action = 'show',
+    toggle = true,
+    reveal_file = reveal_file,
+    reveal_force_cwd = true,
+  }
+end, { silent = true, desc = 'Toggles Neotree' })
+
+-- NVIM HOP
+vim.keymap.set('n', '<leader>w', function()
+  require('hop').hint_words()
+end, { silent = true, desc = 'Hop: Hint Words' })
+
+-- SESSIONS
+vim.keymap.set('n', '<leader>ss', require('session_manager').load_session, { silent = true, desc = 'load session' })
 
 vim.keymap.set('n', '<A-w>', require('harpoon.ui').toggle_quick_menu, { silent = true, desc = 'harpoon : open menu' })
 vim.keymap.set('n', '<A-q>', require('harpoon.mark').toggle_file, { silent = true, desc = 'harpoon : mark file' })

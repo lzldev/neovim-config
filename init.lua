@@ -65,6 +65,15 @@ vim.opt.rtp:prepend(lazypath)
 --  You can also configure plugins after the setup call,
 --    as they will be available in your neovim runtime.
 require('lazy').setup({
+  { 'wakatime/vim-wakatime' },
+  { 'Shatur/neovim-session-manager', opts = {} },
+  { 'nvimdev/hlsearch.nvim', opts = {} },
+  -- "gc" to comment visual regions/lines
+  { 'numToStr/Comment.nvim', opts = {} },
+  -- <uwu>Surround</uwu>
+  { 'tpope/vim-surround' },
+  -- Detect tabstop and shiftwidth automatically
+  { 'tpope/vim-sleuth' },
   {
     'windwp/nvim-autopairs',
     -- Optional dependency
@@ -80,22 +89,12 @@ require('lazy').setup({
   },
   {
     'ThePrimeagen/harpoon',
-    opts = {
-      tabline = true,
-    },
+    opts = {},
   },
   {
     'smoka7/hop.nvim',
     opts = {},
   },
-  { 'Shatur/neovim-session-manager', opts = {} },
-  { 'nvimdev/hlsearch.nvim', opts = {} },
-  -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
-  -- <uwu>Surround</uwu>
-  { 'tpope/vim-surround' },
-  -- Detect tabstop and shiftwidth automatically
-  { 'tpope/vim-sleuth' },
   -- Git related plugins
   -- 'tpope/vim-fugitive', -- :Git does something i think
   -- 'tpope/vim-rhubarb', -- Open Github URLs in vim
@@ -570,6 +569,11 @@ vim.keymap.set('n', '<leader>st', require('telescope.builtin').colorscheme, { de
 vim.keymap.set('n', '<leader>sc', require('telescope.builtin').commands, { desc = '[S]earch [C]ommands' })
 vim.keymap.set('n', '<leader>sk', require('telescope.builtin').keymaps, { desc = '[S]earch [K]eymaps' })
 vim.keymap.set('n', '<leader>so', require('telescope.builtin').oldfiles, { desc = '[S]earch [O]ld Files' })
+vim.keymap.set('n', '<leader>sm', function()
+  require('telescope.builtin').man_pages {
+    sections = 'ALL',
+  }
+end, { desc = '[S]earch [O]ld Files' })
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -751,6 +755,9 @@ require('formatter').setup {
     typescriptreact = {
       require('formatter.filetypes.typescriptreact').prettierd,
     },
+    json = {
+      require('formatter.filetypes.json').prettierd,
+    },
     lua = {
       require('formatter.filetypes.lua').stylua,
     },
@@ -774,7 +781,6 @@ local servers = {
     enablePromptUseWorkspaceTsdk = true,
   },
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
-
   lua_ls = {
     Lua = {
       workspace = { checkThirdParty = false },

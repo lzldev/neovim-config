@@ -356,7 +356,6 @@ vim.keymap.set('n', '<leader>ut', function()
   vim.print('transparent : ' .. vim.inspect(vim.g.transparent))
 end, { silent = true, desc = 'Toggle transparency' })
 
-
 -- Toggle Wrap
 vim.keymap.set('n', '<leader>uw', function()
   vim.wo.wrap = not vim.wo.wrap
@@ -738,7 +737,6 @@ require('which-key').register {
 -- before setting up the servers.
 require('mason').setup()
 require('mason-lspconfig').setup()
-
 require('formatter').setup {
   logging = true,
   cwd = function()
@@ -752,12 +750,14 @@ require('formatter').setup {
       require('formatter.filetypes.javascript').prettierd,
     },
     javascriptreact = {
+      require('custom.formatters').rustywind,
       require('formatter.filetypes.javascriptreact').prettierd,
     },
     typescript = {
       require('formatter.filetypes.typescript').prettierd,
     },
     typescriptreact = {
+      require('custom.formatters').rustywind,
       require('formatter.filetypes.typescriptreact').prettierd,
     },
     json = {
@@ -782,9 +782,63 @@ local servers = {
   -- gopls = {},
   -- pyright = {},
   -- rust_analyzer = {},
+  --
+  tailwindcss = {
+    filetypes = {
+      'aspnetcorerazor',
+      'astro',
+      'astro - markdown',
+      'blade',
+      'clojure',
+      'django - html',
+      'htmldjango',
+      'edge',
+      'eelixir',
+      'elixir',
+      'ejs',
+      'erb',
+      'eruby',
+      'gohtml',
+      'gohtmltmpl',
+      'haml',
+      'handlebars',
+      'hbs',
+      'html',
+      'html - eex',
+      'heex',
+      'jade',
+      'leaf',
+      'liquid',
+      'markdown',
+      'mdx',
+      'mustache',
+      'njk',
+      'nunjucks',
+      'php',
+      'razor',
+      -- "slim",
+      -- "twig",
+      'css',
+      'less',
+      'postcss',
+      'sass',
+      'scss',
+      'stylus',
+      'sugarss',
+      -- "javascript",
+      'javascriptreact',
+      'reason',
+      'rescript',
+      -- "typescript",
+      'typescriptreact',
+      'vue',
+      'svelte',
+    },
+  },
   tsserver = {
     enablePromptUseWorkspaceTsdk = true,
   },
+  html = { filetypes = { 'html', 'javascriptreact', 'typescriptreact' } },
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
   lua_ls = {
     Lua = {

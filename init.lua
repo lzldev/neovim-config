@@ -444,7 +444,7 @@ end, { silent = true, desc = 'terminal in horizontal [S]plit' })
 vim.keymap.set('n', '<A-Tab>', vim.cmd.bn, { silent = true, desc = 'Next Buffer' })
 vim.keymap.set('n', '<A-S-Tab>', vim.cmd.bp, { silent = true, desc = 'Previous Buffer' })
 
-vim.keymap.set('n', '<leader>bc', vim.cmd.bw, { silent = true, desc = 'Wipeout Buffer' })
+vim.keymap.set('n', '<leader>c', vim.cmd.bw, { silent = true, desc = 'Wipeout Buffer' })
 -- Wipes everything to the right
 vim.keymap.set('n', '<leader>bl', function()
   vim.cmd '.+,$bw'

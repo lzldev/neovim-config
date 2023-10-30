@@ -4,16 +4,51 @@ return {
     opts = {
       width = 110,
       buffers = {
-        colors = {
-          blend = 10
-        },
         wo = {
           fillchars = 'eob: ',
         },
       },
     },
   },
-  { 'SmiteshP/nvim-navic', opts = {lsp ={auto_attach = true}}, after = 'nvim-lualine/lualine.nvim' },
+  {
+    'stevearc/aerial.nvim',
+    opts = {
+      filter_kind = {
+        'Array',
+        'Boolean',
+        'Class',
+        'Constant',
+        'Constructor',
+        'Enum',
+        'EnumMember',
+        'Event',
+        'Field',
+        'File',
+        'Function',
+        'Interface',
+        'Key',
+        'Method',
+        'Module',
+        'Namespace',
+        'Null',
+        'Number',
+        'Object',
+        'Operator',
+        'Package',
+        'Property',
+        'String',
+        'Struct',
+        'TypeParameter',
+        'Variable',
+      },
+    },
+    -- Optional dependencies
+    dependencies = {
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-tree/nvim-web-devicons',
+    },
+  },
+  { 'SmiteshP/nvim-navic', opts = { lsp = { auto_attach = true } }, after = 'nvim-lualine/lualine.nvim' },
   {
     -- Set lualine as statusline
     'nvim-lualine/lualine.nvim',
@@ -29,12 +64,12 @@ return {
         globalstatus = true,
       },
       sections = {
-        lualine_a = {'mode'},
-        lualine_b = {'branch', 'diff', 'diagnostics'},
-        lualine_c = {'filename','searchcount'},
-        lualine_x = {'encoding', 'fileformat', 'filetype'},
-        lualine_y = {'progress'},
-        lualine_z = {'location'}
+        lualine_a = { 'mode' },
+        lualine_b = { 'branch', 'diff', 'diagnostics' },
+        lualine_c = { 'filename', 'searchcount' },
+        lualine_x = { 'encoding', 'fileformat', 'filetype' },
+        lualine_y = { 'progress' },
+        lualine_z = { 'location' },
       },
       tabline = {
         lualine_a = {
@@ -54,12 +89,58 @@ return {
         lualine_z = { 'tabs' },
       },
       winbar = {
-        lualine_a = {{ 'navic' , color_correction = 'dynamic'}},
+        lualine_a = { { 'navic', color_correction = 'dynamic' } },
         lualine_c = {},
-        lualine_x = {{function() return 'miau ~.~' end}},
+        lualine_x = { {
+          function()
+            return 'miau ~.~'
+          end,
+        } },
         lualine_y = { 'branch' },
         lualine_z = { 'diff' },
       },
+    },
+  },
+  {
+    -- Adds git related signs to the gutter, as well as utilities for managing changes
+    'lewis6991/gitsigns.nvim',
+    opts = {
+      -- See `:help gitsigns.txt`
+      signs = {
+        add = { text = '+' },
+        change = { text = '~' },
+        delete = { text = '_' },
+        topdelete = { text = '‾' },
+        changedelete = { text = '~' },
+      },
+      on_attach = function(bufnr)
+        vim.keymap.set('n', '<leader>hp', require('gitsigns').preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
+
+        -- don't override the built-in and fugitive keymaps
+        local gs = package.loaded.gitsigns
+        vim.keymap.set({ 'n', 'v' }, ']c', function()
+          if vim.wo.diff then
+            return ']c'
+          end
+          vim.schedule(function()
+            gs.next_hunk()
+          end)
+          return '<Ignore>'
+        end, { expr = true, buffer = bufnr, desc = 'Jump to next hunk' })
+        vim.keymap.set({ 'n', 'v' }, '[c', function()
+          if vim.wo.diff then
+            return '[c'
+          end
+          vim.schedule(function()
+            gs.prev_hunk()
+          end)
+          return '<Ignore>'
+        end, {
+          expr = true,
+          buffer = bufnr,
+          desc = 'Jump to previous hunk',
+        })
+      end,
     },
   },
 }

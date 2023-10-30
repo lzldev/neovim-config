@@ -1,45 +1,3 @@
---[[
-s
-/====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-
-Kickstart.nvim is *not* a distribution.
-
-Kickstart.nvim is a template for your own configuration.
-  The goal is that you can read every line of code, top-to-bottom, understand
-  what your configuration is doing, and modify it to suit your needs.
-
-  Once you've done that, you should start exploring, configuring and tinkering to
-  explore Neovim!
-
-  If you don't know anything about Lua, I recommend taking some time to read through
-  a guide. One possible example:
-  - https://learnxinyminutes.com/docs/lua/
-
-
-  And then you can explore or search through `:help lua-guide`
-  - https://neovim.io/doc/user/lua-guide.html
-
-
-Kickstart Guide:
-
-I have left several `:help X` comments throughout the init.lua
-You should run that command and read that help section for more information.
-
-In addition, I have some `NOTE:` items throughout the file.
-These are for you, the reader to help understand what is happening. Feel free to delete
-them once you know what you're doing, but they should serve as a guide for when you
-are first encountering a few different constructs in your nvim config.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
-P.S. You can delete this when you're done too. It's your config now :)
---]]
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
@@ -65,6 +23,8 @@ vim.opt.rtp:prepend(lazypath)
 --  You can also configure plugins after the setup call,
 --    as they will be available in your neovim runtime.
 require('lazy').setup({
+  -- require 'kickstart.plugins.autoformat',
+  -- require 'kickstart.plugins.debug',
   { import = 'ui' },
   { 'wakatime/vim-wakatime' },
   { 'Shatur/neovim-session-manager', opts = {} },
@@ -118,7 +78,6 @@ require('lazy').setup({
       'folke/neodev.nvim',
     },
   },
-
   {
     -- Autocompletion
     'hrsh7th/nvim-cmp',
@@ -134,51 +93,8 @@ require('lazy').setup({
       'rafamadriz/friendly-snippets',
     },
   },
-
   -- Useful plugin to show you pending keybinds.
   { 'folke/which-key.nvim', opts = {} },
-  {
-    -- Adds git related signs to the gutter, as well as utilities for managing changes
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      -- See `:help gitsigns.txt`
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-      on_attach = function(bufnr)
-        vim.keymap.set('n', '<leader>hp', require('gitsigns').preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
-
-        -- don't override the built-in and fugitive keymaps
-        local gs = package.loaded.gitsigns
-        vim.keymap.set({ 'n', 'v' }, ']c', function()
-          if vim.wo.diff then
-            return ']c'
-          end
-          vim.schedule(function()
-            gs.next_hunk()
-          end)
-          return '<Ignore>'
-        end, { expr = true, buffer = bufnr, desc = 'Jump to next hunk' })
-        vim.keymap.set({ 'n', 'v' }, '[c', function()
-          if vim.wo.diff then
-            return '[c'
-          end
-          vim.schedule(function()
-            gs.prev_hunk()
-          end)
-          return '<Ignore>'
-        end, {
-          expr = true,
-          buffer = bufnr,
-          desc = 'Jump to previous hunk',
-        })
-      end,
-    },
-  },
   {
     'lizlodev/oxocarbon',
     name = 'oxocarbon',
@@ -190,7 +106,6 @@ require('lazy').setup({
     priority = 1000,
   },
   {
-
     'nvim-neo-tree/neo-tree.nvim',
     lazy = true,
     version = '*',
@@ -282,20 +197,13 @@ require('lazy').setup({
   {
     'mhartington/formatter.nvim',
   },
-
-  -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
-  --       These are some example plugins that I've included in the kickstart repository.
-  --       Uncomment any of the lines below to enable them.
-  -- require 'kickstart.plugins.autoformat',
-  -- require 'kickstart.plugins.debug',
-
-  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
-  --    You can use this folder to prevent any conflicts with this init.lua if you're interested in keeping
-  --    up-to-date with whatever is in the kickstart repo.
-  --    Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  --
-  --    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
-  -- { import = 'custom.plugins' },
+  {
+    'treesitter-tohtml.nvim',
+    lazy = false,
+    enabled = true,
+    opts = {},
+    dev = true,
+  },
 }, {
   defaults = {
     -- lazy = true, -- lazy load by default
@@ -311,11 +219,14 @@ require('lazy').setup({
         'matchparen',
         'netrwPlugin',
         'tarPlugin',
-        'tohtml',
+        -- 'tohtml',
         'tutor',
         'zipPlugin',
       },
     },
+  },
+  dev = {
+    path = '~/code/nvim-plugins',
   },
   -- disables regular vim plugins
   -- profiling = {
@@ -323,44 +234,6 @@ require('lazy').setup({
   --   require = true,
   -- },
 })
-
--- [[ Setting options ]]
--- See `:help vim.o`
--- NOTE: You can change these options as you wish!
-
---Removes background from themes
-vim.api.nvim_create_autocmd('ColorScheme', {
-  callback = function()
-    if not vim.g.transparent then
-      return nil
-    end
-
-    vim.cmd.highlight 'Normal guibg=#000000'
-    vim.cmd.highlight 'NormalNC guibg=#000000'
-  end,
-})
-
--- Toggle background
-vim.keymap.set('n', '<leader>ub', function()
-  if vim.o.background == 'dark' then
-    vim.o.background = 'light'
-  elseif vim.o.background == 'light' then
-    vim.o.background = 'dark'
-  end
-  vim.print(vim.o.background)
-end, { silent = true, desc = 'Toggle Background' })
-
--- Toggle Transparency
-vim.keymap.set('n', '<leader>ut', function()
-  vim.g.transparent = not vim.g.transparent
-  vim.print('transparent : ' .. vim.inspect(vim.g.transparent))
-end, { silent = true, desc = 'Toggle transparency' })
-
--- Toggle Wrap
-vim.keymap.set('n', '<leader>uw', function()
-  vim.wo.wrap = not vim.wo.wrap
-  vim.print('Wrap : ' .. vim.inspect(vim.wo.wrap))
-end, { silent = true, desc = 'Toggle wrap' })
 
 -- custom options
 vim.g.transparent = true -- removes background on colorschemeload
@@ -385,8 +258,8 @@ vim.o.completeopt = 'menuone,noselect'
 vim.o.termguicolors = true
 
 -- Theme
+require 'custom.highlights'
 vim.cmd.colorscheme 'oxocarbon'
-
 -- Highlights
 
 -- [[ Basic Keymaps ]]
@@ -394,7 +267,8 @@ vim.cmd.colorscheme 'oxocarbon'
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
-vim.keymap.set('n', '<C-0>', '<C-6>', { silent = true, desc = ' go to alternate file ' }) --alternate file
+--ALTERNATE FILE
+vim.keymap.set('n', '<C-0>', '<C-6>', { silent = true, desc = ' go to alternate file ' })
 
 -- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
@@ -425,13 +299,15 @@ end, { silent = true })
 -- Terminal
 vim.cmd.autocmd 'TermOpen * startinsert' -- Starts terminals in insert mode
 
--- Adds Ctrl + Space as a Mapping to get out of term Mode
+-- Ctrl + Space as a Mapping to get out of term Mode
 vim.keymap.set('t', '<C-Space>', '<C-\\><C-n><C-w>h', { silent = true, desc = 'get out of term mode' })
 
+-- Lazygit
 vim.keymap.set('n', '<leader>gg', function()
   vim.cmd.term 'lazygit'
 end, { silent = true, desc = 'opens lazygit' })
 
+-- Term splits
 vim.keymap.set('n', '<leader>tv', function()
   vim.cmd ':vsplit +:term'
 end, { silent = true, desc = 'terminal in [V]ertical split' })
@@ -444,10 +320,41 @@ vim.keymap.set('n', '<A-Tab>', vim.cmd.bn, { silent = true, desc = 'Next Buffer'
 vim.keymap.set('n', '<A-S-Tab>', vim.cmd.bp, { silent = true, desc = 'Previous Buffer' })
 
 vim.keymap.set('n', '<leader>c', vim.cmd.bw, { silent = true, desc = 'Wipeout Buffer' })
--- Wipes everything to the right
+-- Wipeout buffers to the right
 vim.keymap.set('n', '<leader>bl', function()
   vim.cmd '.+,$bw'
 end, { silent = true, desc = 'Wipes all buffers to the right' })
+
+-- Write and source file  ( for plugin dev and etc .. )
+vim.keymap.set('n', '<leader>px', function()
+  vim.cmd.w()
+  vim.cmd.source '%'
+end, { silent = true, desc = 'Write file and source' })
+
+--------------------------------------------------------------------------------
+---------------------------------- UI MAPPINGS ---------------------------------
+--------------------------------------------------------------------------------
+
+vim.keymap.set('n', '<leader>ub', function()
+  if vim.o.background == 'dark' then
+    vim.o.background = 'light'
+  elseif vim.o.background == 'light' then
+    vim.o.background = 'dark'
+  end
+  vim.print(vim.o.background)
+end, { silent = true, desc = 'Toggle Background' })
+
+-- Toggle Transparency
+vim.keymap.set('n', '<leader>ut', function()
+  vim.g.transparent = not vim.g.transparent
+  vim.print('transparent : ' .. vim.inspect(vim.g.transparent))
+end, { silent = true, desc = 'Toggle transparency' })
+
+-- Toggle Wrap
+vim.keymap.set('n', '<leader>uw', function()
+  vim.wo.wrap = not vim.wo.wrap
+  vim.print('Wrap : ' .. vim.inspect(vim.wo.wrap))
+end, { silent = true, desc = 'Toggle wrap' })
 
 --------------------------------------------------------------------------------
 -------------------------------- Plugin Mappings -------------------------------
@@ -574,7 +481,7 @@ vim.keymap.set('n', '<leader>sk', require('telescope.builtin').keymaps, { desc =
 vim.keymap.set('n', '<leader>so', require('telescope.builtin').oldfiles, { desc = '[S]earch [O]ld Files' })
 vim.keymap.set('n', '<leader>sm', function()
   require('telescope.builtin').man_pages {
-    sections = 'ALL',
+    sections = { 'ALL' },
   }
 end, { desc = '[S]earch [O]ld Files' })
 
@@ -746,6 +653,9 @@ require('formatter').setup {
     return workspace_root
   end,
   filetype = {
+    html = {
+      require('formatter.filetypes.javascript').prettierd,
+    },
     javascript = {
       require('formatter.filetypes.javascript').prettierd,
     },
@@ -838,7 +748,7 @@ local servers = {
   tsserver = {
     enablePromptUseWorkspaceTsdk = true,
   },
-  html = { filetypes = { 'html', 'javascriptreact', 'typescriptreact' } },
+  -- html = { filetypes = { 'html', 'javascriptreact', 'typescriptreact' } },
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
   lua_ls = {
     Lua = {
@@ -922,6 +832,8 @@ cmp.setup {
     { name = 'luasnip' },
   },
 }
+
+require 'custom.globals'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

@@ -29,7 +29,6 @@ require('lazy').setup({
   { 'wakatime/vim-wakatime' },
   { 'Shatur/neovim-session-manager', opts = {} },
   { 'nvimdev/hlsearch.nvim', opts = {} },
-  -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
   -- <uwu>Surround</uwu>
   { 'tpope/vim-surround' },
@@ -101,7 +100,6 @@ require('lazy').setup({
     priority = 1000,
   },
   {
-    -- Theme inspired by Atom
     'navarasu/onedark.nvim',
     priority = 1000,
   },
@@ -239,7 +237,7 @@ require('lazy').setup({
 vim.g.transparent = true -- removes background on colorschemeload
 
 -- vim options
-vim.o.cmdheight = 0
+vim.o.cmdheight = 1
 vim.o.hlsearch = true
 vim.o.number = true
 vim.o.relativenumber = true
@@ -593,14 +591,34 @@ local on_attach = function(_, bufnr)
     vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
   end
 
+  -- TS SERVER - CAPABILITIES
+  -- local caps = {
+  --   server_capabilities = {
+  --     executeCommandProvider = {
+  --       commands = {
+  --         '_typescript.applyWorkspaceEdit',
+  --         '_typescript.applyCodeAction',
+  --         '_typescript.applyRefactoring',
+  --         '_typescript.configurePlugin',
+  --         '_typescript.organizeImports',
+  --         '_typescript.applyRenameFile',
+  --         '_typescript.goToSourceDefinition',
+  --       },
+  --     },
+  --   },
+  -- }
+
   nmap('<leader>lr', vim.lsp.buf.rename, '[R]ename')
   nmap('<leader>la', vim.lsp.buf.code_action, 'Code [A]ction')
+  nmap('<leader>lo', require('telescope.builtin').lsp_outgoing_calls, '[O]utgoing Calls')
+  nmap('<leader>li', require('telescope.builtin').lsp_incoming_calls, '[I]ncoming Calls')
+  nmap('<leader>lf', require('telescope.builtin').lsp_document_symbols, '[F]ile Symbols')
+  -- nmap('<leader>lc', require('telescope.builtin').lsp_document_symbols, '[F]ile Symbols')
 
   nmap('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
   nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
   nmap('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
   nmap('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-  nmap('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
   nmap('<leader>Ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
 
   -- See `:help K` for why this keymap
@@ -745,8 +763,16 @@ local servers = {
       'svelte',
     },
   },
+  eslint = {},
   tsserver = {
-    enablePromptUseWorkspaceTsdk = true,
+    javascript = {
+      enablePromptUseWorkspaceTsdk = true,
+    },
+    typescript = {
+      enablePromptUseWorkspaceTsdk = true,
+      preferGoToSourceDefinition = true,
+      tsdk = "node_modules/typescript/lib"
+    },
   },
   -- html = { filetypes = { 'html', 'javascriptreact', 'typescriptreact' } },
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },

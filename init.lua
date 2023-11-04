@@ -1,9 +1,28 @@
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
--- Install package manager
---    https://github.com/folke/lazy.nvim
---    `:help lazy.nvim.txt` for more info
+-- custom options
+vim.g.transparent = true -- removes background on colorschemeload
+
+-- NVIM options
+vim.o.cmdheight = 0
+vim.o.hlsearch = true
+vim.o.number = true
+vim.o.relativenumber = true
+vim.o.scrolloff = 8
+vim.o.sidescrolloff = 16
+vim.o.mouse = 'a'
+vim.o.clipboard = 'unnamedplus'
+vim.o.breakindent = true
+vim.o.undofile = true
+vim.o.ignorecase = true
+vim.o.smartcase = true
+vim.wo.signcolumn = 'yes'
+vim.o.updatetime = 250
+vim.o.timeoutlen = 300
+vim.o.completeopt = 'menuone,noselect'
+vim.o.termguicolors = true
+
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -17,11 +36,6 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- NOTE: Here is where you install your plugins.
---  You can configure plugins using the `config` key.
---
---  You can also configure plugins after the setup call,
---    as they will be available in your neovim runtime.
 require('lazy').setup({
   -- require 'kickstart.plugins.autoformat',
   -- require 'kickstart.plugins.debug',
@@ -56,11 +70,8 @@ require('lazy').setup({
     opts = {},
   },
   -- Git related plugins
-  -- 'tpope/vim-fugitive', -- :Git does something i think
-  -- 'tpope/vim-rhubarb', -- Open Github URLs in vim
-
-  -- NOTE: This is where your plugins related to LSP can be installed.
-  --  The configuration is done below. Search for lspconfig to find it below.
+  'tpope/vim-fugitive',
+  'tpope/vim-rhubarb',
   {
     -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
@@ -95,7 +106,7 @@ require('lazy').setup({
   -- Useful plugin to show you pending keybinds.
   { 'folke/which-key.nvim', opts = {} },
   {
-    'lizlodev/oxocarbon',
+    'lzldev/oxocarbon',
     name = 'oxocarbon',
     priority = 1000,
   },
@@ -211,10 +222,11 @@ require('lazy').setup({
       enabled = true,
     },
     rtp = {
+      -- disables regular vim plugins
       disabled_plugins = {
         'gzip',
-        'matchit',
-        'matchparen',
+        -- 'matchit',
+        -- 'matchparen',
         'netrwPlugin',
         'tarPlugin',
         -- 'tohtml',
@@ -226,34 +238,11 @@ require('lazy').setup({
   dev = {
     path = '~/code/nvim-plugins',
   },
-  -- disables regular vim plugins
   -- profiling = {
   --   loader = true,
   --   require = true,
   -- },
 })
-
--- custom options
-vim.g.transparent = true -- removes background on colorschemeload
-
--- vim options
-vim.o.cmdheight = 1
-vim.o.hlsearch = true
-vim.o.number = true
-vim.o.relativenumber = true
-vim.o.scrolloff = 8
-vim.o.sidescrolloff = 16
-vim.o.mouse = 'a'
-vim.o.clipboard = 'unnamedplus'
-vim.o.breakindent = true
-vim.o.undofile = true
-vim.o.ignorecase = true
-vim.o.smartcase = true
-vim.wo.signcolumn = 'yes'
-vim.o.updatetime = 250
-vim.o.timeoutlen = 300
-vim.o.completeopt = 'menuone,noselect'
-vim.o.termguicolors = true
 
 -- Theme
 require 'custom.highlights'
@@ -417,36 +406,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
--- [[ Configure Telescope ]]
--- See `:help telescope` and `:help telescope.setup()`
--- require('telescope').setup {
---   pickers = {
---     find_files = {
---       hidden = true,
---     },
---   },
---   defaults = {
---     sorting_strategy = 'ascending',
---     layout_strategy = 'horizontal',
---     layout_config = {
---       horizontal = { prompt_position = 'top', anchor = 'top' },
---     },
---     mappings = {
---       i = {
---         ['<C-u>'] = false,
---         ['<C-d>'] = false,
---       },
---     },
---   },
--- }
---
--- require('telescope').load_extension 'ui-select'
---
--- -- Enable telescope fzf native, if installed
--- pcall(require('telescope').load_extension, 'fzf')
-
--- Telescope Mappings
--- See `:help telescope.builtin`
+-- TELESCOPE Mappings
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
 vim.keymap.set('n', '<leader>"', require('telescope.builtin').registers, { desc = 'Find in Registers' })
@@ -484,8 +444,6 @@ vim.keymap.set('n', '<leader>sm', function()
 end, { desc = '[S]earch [O]ld Files' })
 
 -- [[ Configure Treesitter ]]
--- See `:help nvim-treesitter`
--- Defer Treesitter setup after first render to improve startup time of 'nvim {filename}'
 vim.defer_fn(function()
   require('nvim-treesitter.configs').setup {
     modules = {},
@@ -506,10 +464,7 @@ vim.defer_fn(function()
       'vim',
       'bash',
     },
-
-    -- Autoinstall languages that are not installed. Defaults to false (but you can change for yourself!)
     auto_install = true,
-
     highlight = { enable = true },
     indent = { enable = true },
     incremental_selection = {
@@ -575,14 +530,7 @@ vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open float
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
 
 -- [[ Configure LSP ]]
---  This function gets run when an LSP connects to a particular buffer.
 local on_attach = function(_, bufnr)
-  -- NOTE: Remember that lua is a real programming language, and as such it is possible
-  -- to define small helper and utility functions so you don't have to repeat yourself
-  -- many times.
-  --
-  -- In this case, we create a function that lets us more easily define mappings specific
-  -- for LSP related items. It sets the mode, buffer and description for us each time.
   local nmap = function(keys, func, desc)
     if desc then
       desc = 'LSP: ' .. desc
@@ -698,13 +646,6 @@ require('formatter').setup {
 }
 
 -- Enable the following language servers
---  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
---
---  Add any additional override configuration in the following tables. They will be passed to
---  the `settings` field of the server config. You must look up that documentation yourself.
---
---  If you want to override the default filetypes that your language server will attach to you can
---  define the property 'filetypes' to the map in question.
 local servers = {
   -- clangd = {},
   -- gopls = {},
@@ -765,13 +706,18 @@ local servers = {
   },
   eslint = {},
   tsserver = {
+    ['js/ts'] = {
+      implicitProjectConfig = { checkJs = true },
+    },
     javascript = {
+      implicitProjectConfig = { checkJs = true },
       enablePromptUseWorkspaceTsdk = true,
     },
     typescript = {
+      implicitProjectConfig = { checkJs = true },
       enablePromptUseWorkspaceTsdk = true,
       preferGoToSourceDefinition = true,
-      tsdk = "node_modules/typescript/lib"
+      tsdk = 'node_modules/typescript/lib',
     },
   },
   -- html = { filetypes = { 'html', 'javascriptreact', 'typescriptreact' } },

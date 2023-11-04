@@ -1,5 +1,9 @@
 return {
   {
+    'norcalli/nvim-colorizer.lua',
+    opts = {}
+  },
+  {
     'shortcuts/no-neck-pain.nvim',
     opts = {
       width = 110,

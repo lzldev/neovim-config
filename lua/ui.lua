@@ -1,7 +1,7 @@
 return {
   {
     'norcalli/nvim-colorizer.lua',
-    opts = {}
+    opts = {},
   },
   {
     'shortcuts/no-neck-pain.nvim',
@@ -60,7 +60,7 @@ return {
         -- lualine_b = {},
         -- lualine_c = {},
         -- lualine_x = {},
-        lualine_y = { 'hostname', 'datetime' },
+        -- lualine_y = { 'hostname', 'datetime' },
         lualine_z = { 'tabs' },
       },
       winbar = {
@@ -71,8 +71,9 @@ return {
             return 'miau ~.~'
           end,
         } },
+        lualine_z = { 'hostname', 'datetime' },
         -- lualine_y = { 'branch' },
-        lualine_z = { 'diff' },
+        -- lualine_z = { 'diff' },
       },
     },
   },

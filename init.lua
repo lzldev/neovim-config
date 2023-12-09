@@ -23,6 +23,11 @@ vim.o.timeoutlen = 300
 vim.o.completeopt = 'menuone,noselect'
 vim.o.termguicolors = true
 
+if vim.g.vscode then
+  require('custom.vscode')
+  return
+end
+
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -105,6 +110,9 @@ require('lazy').setup({
   },
   -- Useful plugin to show you pending keybinds.
   { 'folke/which-key.nvim', opts = {} },
+  {
+    'Shatur/neovim-ayu',
+  },
   {
     'lzldev/oxocarbon',
     name = 'oxocarbon',
@@ -636,6 +644,7 @@ require('formatter').setup {
       require('custom.formatters').rustywind,
       require('formatter.filetypes.typescriptreact').prettierd,
     },
+    go = { require('formatter.filetypes.go').gofmt() },
     json = {
       require('formatter.filetypes.json').prettierd,
     },
@@ -706,20 +715,25 @@ local servers = {
   },
   eslint = {},
   tsserver = {
+    implicitProjectConfig = { checkJs = true },
+    preferences = { useAliasesForRenames = false },
     ['js/ts'] = {
       implicitProjectConfig = { checkJs = true },
     },
     javascript = {
+      preferences = { useAliasesForRenames = false },
       implicitProjectConfig = { checkJs = true },
       enablePromptUseWorkspaceTsdk = true,
     },
     typescript = {
       implicitProjectConfig = { checkJs = true },
+      preferences = { useAliasesForRenames = false },
       enablePromptUseWorkspaceTsdk = true,
       preferGoToSourceDefinition = true,
       tsdk = 'node_modules/typescript/lib',
     },
   },
+  ["astro-language-server"] = {filetypes = {'astro'}},
   -- html = { filetypes = { 'html', 'javascriptreact', 'typescriptreact' } },
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
   lua_ls = {

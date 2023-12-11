@@ -19,10 +19,40 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   {
+    {
+      'nvim-treesitter/nvim-treesitter',
+      dependencies = {
+        'nvim-treesitter/nvim-treesitter-textobjects',
+      },
+      build = ':TSUpdate',
+    },
     { 'tpope/vim-surround' },
     {
-      'smoka7/hop.nvim',
+      'echasnovski/mini.nvim',
+      lazy = false,
       opts = {},
+      config = function()
+        -- require('mini.ai').setup()
+        -- require('mini.surround').setup {
+        --   mappings = {
+        --     add = 'S',
+        --     -- delete = 'sd', -- Delete surrounding
+        --     -- find = 'sf', -- Find surrounding (to the right)
+        --     -- find_left = 'sF', -- Find surrounding (to the left)
+        --     -- highlight = 'sh', -- Highlight surrounding
+        --     -- replace = 'sr', -- Replace surrounding
+        --     -- update_n_lines = 'sn', -- Update `n_lines`
+        --     -- suffix_last = 'l', -- Suffix to search with "prev" method
+        --     -- suffix_next = 'n', -- Suffix to search with "next" method
+        --   },
+        -- }
+      end,
+    },
+    {
+      'smoka7/hop.nvim',
+      opts = {
+        multi_windows = false,
+      },
     },
   },
 }, {
@@ -30,8 +60,101 @@ require('lazy').setup({
     cache = {
       enabled = true,
     },
+    rtp = {
+      -- disables regular vim plugins
+      disabled_plugins = {
+        'gzip',
+        -- 'matchit',
+        -- 'matchparen',
+        'netrwPlugin',
+        'tarPlugin',
+        'tohtml',
+        'tutor',
+        'zipPlugin',
+      },
+    },
   },
 })
+
+-- Configure Treesitter
+vim.defer_fn(function()
+  require('nvim-treesitter.configs').setup {
+    modules = {},
+    sync_install = false,
+    ignore_install = {},
+    -- Add languages to be installed here that you want installed for treesitter
+    ensure_installed = {
+      'c',
+      'cpp',
+      'go',
+      'lua',
+      'python',
+      'rust',
+      'tsx',
+      'javascript',
+      'typescript',
+      'vimdoc',
+      'vim',
+      'bash',
+    },
+    auto_install = true,
+    highlight = { enable = true },
+    indent = { enable = true },
+    incremental_selection = {
+      enable = true,
+      keymaps = {
+        init_selection = '<c-space>',
+        node_incremental = '<c-space>',
+        scope_incremental = '<c-s>',
+        node_decremental = '<M-space>',
+      },
+    },
+    textobjects = {
+      select = {
+        enable = true,
+        lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
+        keymaps = {
+          -- You can use the capture groups defined in textobjects.scm
+          ['aa'] = '@parameter.outer',
+          ['ia'] = '@parameter.inner',
+          ['af'] = '@function.outer',
+          ['if'] = '@function.inner',
+          ['ac'] = '@class.outer',
+          ['ic'] = '@class.inner',
+        },
+      },
+      move = {
+        enable = true,
+        set_jumps = true, -- whether to set jumps in the jumplist
+        goto_next_start = {
+          [']m'] = '@function.outer',
+          [']]'] = '@class.outer',
+        },
+        goto_next_end = {
+          [']M'] = '@function.outer',
+          [']['] = '@class.outer',
+        },
+        goto_previous_start = {
+          ['[m'] = '@function.outer',
+          ['[['] = '@class.outer',
+        },
+        goto_previous_end = {
+          ['[M'] = '@function.outer',
+          ['[]'] = '@class.outer',
+        },
+      },
+      swap = {
+        enable = true,
+        swap_next = {
+          ['<leader>a'] = '@parameter.inner',
+        },
+        swap_previous = {
+          ['<leader>A'] = '@parameter.inner',
+        },
+      },
+    },
+  }
+end, 0)
 
 vim.print 'LAZY SETUP FINISHED'
 
@@ -46,7 +169,7 @@ vim.keymap.set('n', '<C-0>', '<C-6>', { silent = true, desc = ' go to alternate 
 -- vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 -- vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
--- center after scroll
+-- Center after scroll
 vim.keymap.set('n', '<C-d>', '<C-d>zz', { silent = true })
 vim.keymap.set('n', '<C-u>', '<C-u>zz', { silent = true })
 
@@ -54,15 +177,15 @@ vim.keymap.set('n', '<C-u>', '<C-u>zz', { silent = true })
 vim.keymap.set('n', '<C-q>', vim.cmd.wqa, { silent = true })
 vim.keymap.set('n', '<C-s>', vim.cmd.w, { silent = true })
 
-vim.keymap.set('n', '<leader>c', function()
-  vim.cmd 'q'
-end, { silent = true, desc = 'Close Window' })
-
 --------------------------------------------------------------------------------
 -- CUSTOM VSCODE STUFF ---------------------------------------------------------
 --------------------------------------------------------------------------------
 
 local vscode = require 'vscode-neovim'
+
+vim.keymap.set('n', 'L', function()
+  vscode.action 'editor.action.triggerParameterHints'
+end, { silent = true })
 
 -- Navigate Windows
 vim.keymap.set('n', '<C-h>', function()
@@ -81,11 +204,6 @@ end, { silent = true })
 -- Close Current window
 vim.keymap.set('n', '<leader>c', function()
   vscode.action 'workbench.action.closeActiveEditor'
-end, { silent = true })
-
-vim.keymap.set('n', '<leader>u', function()
-  vim.print 'Trying something out '
-  vscode.call('reveal', { args = { 'center', 0 } })
 end, { silent = true })
 
 -- Toggle Sidebar
@@ -136,9 +254,6 @@ end, { silent = true })
 --   scroll_and_center('down')
 -- end, { silent = true })
 
-
-
-
 -- Center
 -- nnoremap zz <Cmd>call <SID>reveal('center', 0)<CR>
 -- Half page
@@ -149,5 +264,7 @@ end, { silent = true })
 --------------------------------------------------------------------------------
 
 vim.keymap.set('n', '<leader>w', function()
-  require('hop').hint_words()
+  require('hop').hint_words {
+    dim_unmatched = false,
+  }
 end, { silent = true, desc = 'Hop to any word' })

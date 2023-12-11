@@ -24,7 +24,7 @@ vim.o.completeopt = 'menuone,noselect'
 vim.o.termguicolors = true
 
 if vim.g.vscode then
-  require('custom.vscode')
+  require 'custom.vscode'
   return
 end
 
@@ -45,6 +45,20 @@ require('lazy').setup({
   -- require 'kickstart.plugins.autoformat',
   -- require 'kickstart.plugins.debug',
   { import = 'ui' },
+  {
+    'echasnovski/mini.nvim',
+    lazy = false,
+    opts = {},
+    config = function()
+      -- require('mini.ai').setup()
+      -- require('mini.operators').setup()
+      -- require('mini.surround').setup {
+      --   mappings = {
+      --     add = 'S',
+      --   },
+      -- }
+    end,
+  },
   { 'wakatime/vim-wakatime' },
   { 'Shatur/neovim-session-manager', opts = {} },
   { 'nvimdev/hlsearch.nvim', opts = {} },
@@ -72,7 +86,9 @@ require('lazy').setup({
   },
   {
     'smoka7/hop.nvim',
-    opts = {},
+    opts = {
+      multi_windows = false,
+    },
   },
   -- Git related plugins
   'tpope/vim-fugitive',
@@ -733,7 +749,7 @@ local servers = {
       tsdk = 'node_modules/typescript/lib',
     },
   },
-  ["astro-language-server"] = {filetypes = {'astro'}},
+  ['astro-language-server'] = { filetypes = { 'astro' } },
   -- html = { filetypes = { 'html', 'javascriptreact', 'typescriptreact' } },
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
   lua_ls = {

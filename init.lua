@@ -130,7 +130,7 @@ require('lazy').setup({
     'Shatur/neovim-ayu',
   },
   {
-    'lzldev/oxocarbon',
+    'nyoom-engineering/oxocarbon.nvim',
     name = 'oxocarbon',
     priority = 1000,
   },
@@ -234,7 +234,6 @@ require('lazy').setup({
     'treesitter-tohtml.nvim',
     lazy = false,
     enabled = true,
-    opts = {},
     dev = true,
   },
 }, {
@@ -749,7 +748,7 @@ local servers = {
       tsdk = 'node_modules/typescript/lib',
     },
   },
-  ['astro-language-server'] = { filetypes = { 'astro' } },
+  ['astro'] = { filetypes = { 'astro' } },
   -- html = { filetypes = { 'html', 'javascriptreact', 'typescriptreact' } },
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
   lua_ls = {

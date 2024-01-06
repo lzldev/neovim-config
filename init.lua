@@ -253,7 +253,6 @@ require('lazy').setup({
         'netrwPlugin',
         'tarPlugin',
         -- 'tohtml',
-        'tutor',
         'zipPlugin',
       },
     },
@@ -270,7 +269,9 @@ require('lazy').setup({
 -- Theme
 require 'custom.highlights'
 vim.cmd.colorscheme 'oxocarbon'
--- Highlights
+
+-- Autocommands
+require('custom.autocommands').highlight_on_yank()
 
 -- [[ Basic Keymaps ]]
 -- Keymaps for better default experience
@@ -416,18 +417,6 @@ end, { silent = true })
 vim.keymap.set('n', '<A-6>', function()
   require('harpoon.ui').nav_file(6)
 end, { silent = true })
-
--- [[ Highlight on yank ]]
--- See `:help vim.highlight.on_yank()`
-local highlight_group = vim.api.nvim_create_augroup('YankHighlight', { clear = true })
-
-vim.api.nvim_create_autocmd('TextYankPost', {
-  callback = function()
-    vim.highlight.on_yank()
-  end,
-  group = highlight_group,
-  pattern = '*',
-})
 
 -- TELESCOPE Mappings
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })

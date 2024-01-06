@@ -1,4 +1,4 @@
-vim.print '[STARTING VSCODE CONFIG]'
+vim.print '[STARTING IN VSCODE MODE]'
 
 ---------------------------------------------------------------------------------
 --Setup lazy --------------------------------------------------------------------
@@ -156,7 +156,7 @@ vim.defer_fn(function()
   }
 end, 0)
 
-vim.print 'LAZY SETUP FINISHED'
+require('custom.autocommands').highlight_on_yank()
 
 --------------------------------------------------------------------------------
 -- Mappings --------------------------------------------------------------------

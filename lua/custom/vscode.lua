@@ -1,8 +1,10 @@
 vim.print '[STARTING IN VSCODE MODE]'
+vim.cmd.colorscheme 'darkblue'
 
 ---------------------------------------------------------------------------------
 --Setup lazy --------------------------------------------------------------------
 ---------------------------------------------------------------------------------
+
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
@@ -156,6 +158,7 @@ vim.defer_fn(function()
   }
 end, 0)
 
+-- Register autocommands
 require('custom.autocommands').highlight_on_yank()
 
 --------------------------------------------------------------------------------
@@ -201,9 +204,24 @@ vim.keymap.set('n', '<C-j>', function()
   vscode.action 'workbench.action.navigateDown'
 end, { silent = true })
 
--- Close Current window
+--Toggle Line Wrap
+vim.keymap.set('n', '<leader>uw', function()
+  vscode.action 'editor.action.toggleWordWrap'
+end, { silent = true })
+
+-- Show Command thingy
+vim.keymap.set('n', '<leader>k', function()
+  vscode.action 'workbench.action.showCommands'
+end, { silent = true })
+
+-- Close Current Editor
 vim.keymap.set('n', '<leader>c', function()
   vscode.action 'workbench.action.closeActiveEditor'
+end, { silent = true })
+
+--Close all Editors
+vim.keymap.set('n', '<leader>ba', function()
+  vscode.action 'workbench.action.closeAllEditors'
 end, { silent = true })
 
 -- Toggle Sidebar

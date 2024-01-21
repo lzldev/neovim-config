@@ -2,9 +2,10 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- custom options
-vim.g.transparent = true -- removes background on colorschemeload
+vim.g.transparent = false -- removes background on colorschemeload
 
 -- NVIM options
+vim.o.termguicolors = true
 vim.o.cmdheight = 0
 vim.o.hlsearch = true
 vim.o.number = true
@@ -21,7 +22,9 @@ vim.wo.signcolumn = 'yes'
 vim.o.updatetime = 250
 vim.o.timeoutlen = 300
 vim.o.completeopt = 'menuone,noselect'
-vim.o.termguicolors = true
+
+-- Block cursor
+vim.o.guicursor = ''
 
 if vim.g.vscode then
   require 'custom.vscode'
@@ -128,10 +131,18 @@ require('lazy').setup({
   { 'folke/which-key.nvim', opts = {} },
   {
     'Shatur/neovim-ayu',
+    priority = 1000,
+  },
+  {
+    'gambhirsharma/vesper.nvim',
+    priority = 1000,
   },
   {
     'nyoom-engineering/oxocarbon.nvim',
-    name = 'oxocarbon',
+    priority = 1000,
+  },
+  {
+    'rose-pine/neovim',
     priority = 1000,
   },
   {
@@ -140,7 +151,6 @@ require('lazy').setup({
   },
   {
     'nvim-neo-tree/neo-tree.nvim',
-    lazy = true,
     version = '*',
     dependencies = {
       'nvim-lua/plenary.nvim',
@@ -149,6 +159,7 @@ require('lazy').setup({
     },
     opts = {
       filesystem = {
+        hijack_netrw_behavior = 'open_current',
         filtered_items = {
           hide_dotfiles = false,
           hide_hidden = false,
@@ -237,9 +248,6 @@ require('lazy').setup({
     dev = true,
   },
 }, {
-  defaults = {
-    -- lazy = true, -- lazy load by default
-  },
   performance = {
     cache = {
       enabled = true,
@@ -268,7 +276,7 @@ require('lazy').setup({
 
 -- Theme
 require 'custom.highlights'
-vim.cmd.colorscheme 'oxocarbon'
+vim.cmd.colorscheme 'rose-pine-main'
 
 -- Autocommands
 require('custom.autocommands').highlight_on_yank()
@@ -332,9 +340,20 @@ vim.keymap.set('n', '<A-S-Tab>', vim.cmd.bp, { silent = true, desc = 'Previous B
 
 vim.keymap.set('n', '<leader>c', vim.cmd.bw, { silent = true, desc = 'Wipeout Buffer' })
 -- Wipeout buffers to the right
-vim.keymap.set('n', '<leader>bl', function()
+vim.keymap.set('n', '<leader>br', function()
   vim.cmd '.+,$bw'
 end, { silent = true, desc = 'Wipes all buffers to the right' })
+
+-- Wipeout Buffers to the left
+vim.keymap.set('n', '<leader>bl', function()
+  vim.cmd '1,-$bw'
+end, { silent = true, desc = 'Wipes all buffers to the left' })
+
+-- Wipeout other buffers
+vim.keymap.set('n', '<leader>bo', function()
+  vim.cmd '1,-$bw'
+  vim.cmd '.+,$bw'
+end, { silent = true, desc = 'Wipes all other buffers' })
 
 -- Write and source file  ( for plugin dev and etc .. )
 vim.keymap.set('n', '<leader>px', function()
@@ -378,19 +397,15 @@ vim.keymap.set('n', '<leader>pm', vim.cmd.Mason, { silent = true, desc = 'Open M
 
 -- Neo-tree Reveal
 vim.keymap.set('n', '<leader>o', function()
-  local reveal_file = require('utils').get_reveal_file_path()
-
   require('neo-tree.command').execute {
     action = 'show',
-    toggle = true,
-    reveal_file = reveal_file,
-    reveal_force_cwd = true,
+    position = 'current',
   }
 end, { silent = true, desc = 'Toggles Neotree' })
 
 -- NVIM HOP
 vim.keymap.set('n', '<leader>w', function()
-  require('hop').hint_words()
+  require('hop').hint_words {}
 end, { silent = true, desc = 'Hop: Hint Words' })
 
 -- SESSIONS
@@ -433,7 +448,7 @@ vim.keymap.set('n', '<leader>/', function()
 end, { desc = '[/] Fuzzily search in current buffer' })
 
 vim.keymap.set('n', '<leader>gf', require('telescope.builtin').git_files, { desc = 'Search [G]it [F]iles' })
-vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[S]earch [F]iles' })
+vim.keymap.set('n', '<leader>f', require('telescope.builtin').find_files, { desc = 'Search [F]iles' })
 vim.keymap.set('n', '<leader>sF', function()
   require('telescope.builtin').find_files {
     no_ignore = false,
@@ -587,7 +602,7 @@ local on_attach = function(_, bufnr)
   nmap('L', vim.lsp.buf.signature_help, 'Signature Documentation')
 
   --Format
-  nmap('<leader>f', vim.cmd.Format, 'Format')
+  nmap('<leader>j', vim.cmd.Format, 'Format')
   -- Lesser used LSP functionality
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
   nmap('<leader>Wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')

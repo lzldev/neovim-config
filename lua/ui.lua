@@ -39,7 +39,15 @@ return {
         globalstatus = true,
       },
       sections = {
-        lualine_a = { 'mode' },
+        lualine_a = {
+          {
+            'mode',
+            fmt = function(s)
+              if s == "NORMAL" then return " " end
+              return s:sub(1, 1):upper()
+            end,
+          },
+        },
         lualine_b = { 'branch', 'diff', 'diagnostics' },
         lualine_c = { 'filename', 'searchcount' },
         lualine_x = { 'encoding', 'fileformat', 'filetype' },

@@ -1,8 +1,8 @@
 --Removes background from themes
 local _hi_overrides = {
   defaults = {
-    Normal = { 'guibg=#000000' },
-    NormalNC = { 'guibg=#000000' },
+    Normal = { 'guibg=none' },
+    NormalNC = { 'guibg=none' },
   },
   oxocarbon = {
     Comment = {"guifg=#de95ff"}

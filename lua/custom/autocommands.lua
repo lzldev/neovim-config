@@ -1,7 +1,7 @@
 local M = {}
 
 -- Register a autocommand for highlighting text being yanked.
---   See `:help vim.highlight.on_yank()`  
+--   See `:help vim.highlight.on_yank()`
 -----
 M.highlight_on_yank = function()
   -- [[ Highlight on yank ]]
@@ -15,6 +15,11 @@ M.highlight_on_yank = function()
     group = highlight_group,
     pattern = '*',
   })
+end
+
+M.start_terminal_in_insert_mode = function()
+  -- Terminal end
+  vim.cmd.autocmd 'TermOpen * startinsert' -- Starts terminals in insert mode
 end
 
 return M

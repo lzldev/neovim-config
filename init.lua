@@ -279,7 +279,10 @@ require 'custom.highlights'
 vim.cmd.colorscheme 'rose-pine-main'
 
 -- Autocommands
-require('custom.autocommands').highlight_on_yank()
+local autocmds = require('custom.autocommands')
+
+autocmds.highlight_on_yank()
+autocmds.start_terminal_in_insert_mode()
 
 -- [[ Basic Keymaps ]]
 -- Keymaps for better default experience
@@ -314,9 +317,6 @@ end, { silent = true })
 vim.keymap.set('n', '<C-j>', function()
   vim.cmd.wincmd 'j'
 end, { silent = true })
-
--- Terminal
-vim.cmd.autocmd 'TermOpen * startinsert' -- Starts terminals in insert mode
 
 -- Ctrl + Space as a Mapping to get out of term Mode
 vim.keymap.set('t', '<C-Space>', '<C-\\><C-n><C-w>h', { silent = true, desc = 'get out of term mode' })

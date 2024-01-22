@@ -23,9 +23,6 @@ vim.o.updatetime = 250
 vim.o.timeoutlen = 300
 vim.o.completeopt = 'menuone,noselect'
 
--- Block cursor
-vim.o.guicursor = ''
-
 if vim.g.vscode then
   require 'custom.vscode'
   return

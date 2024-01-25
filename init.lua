@@ -121,7 +121,7 @@ require('lazy').setup({
       'hrsh7th/cmp-nvim-lsp',
 
       -- Adds a number of user-friendly snippets
-      'rafamadriz/friendly-snippets',
+      -- 'rafamadriz/friendly-snippets',
     },
   },
   -- Useful plugin to show you pending keybinds.
@@ -276,7 +276,7 @@ require 'custom.highlights'
 vim.cmd.colorscheme 'rose-pine-main'
 
 -- Autocommands
-local autocmds = require('custom.autocommands')
+local autocmds = require 'custom.autocommands'
 
 autocmds.highlight_on_yank()
 autocmds.start_terminal_in_insert_mode()
@@ -343,12 +343,12 @@ end, { silent = true, desc = 'Wipes all buffers to the right' })
 
 -- Wipeout Buffers to the left
 vim.keymap.set('n', '<leader>bl', function()
-  vim.cmd '1,-$bw'
+  vim.cmd '1,.-bw'
 end, { silent = true, desc = 'Wipes all buffers to the left' })
 
 -- Wipeout other buffers
 vim.keymap.set('n', '<leader>bo', function()
-  vim.cmd '1,-$bw'
+  vim.cmd '1,.-bw'
   vim.cmd '.+,$bw'
 end, { silent = true, desc = 'Wipes all other buffers' })
 
@@ -643,6 +643,9 @@ require('formatter').setup {
     return workspace_root
   end,
   filetype = {
+    rust = {
+      require('formatter.filetypes.rust').rustfmt,
+    },
     html = {
       require('formatter.filetypes.javascript').prettierd,
     },
@@ -675,7 +678,7 @@ local servers = {
   -- clangd = {},
   -- gopls = {},
   -- pyright = {},
-  -- rust_analyzer = {},
+  rust_analyzer = {},
   --
   tailwindcss = {
     filetypes = {
@@ -761,7 +764,8 @@ local servers = {
 }
 
 -- Setup neovim lua configuration
-require('neodev').setup()
+-- i think this is breaking my nvim cmp so do this.
+-- require('neodev').setup()
 
 -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -790,8 +794,8 @@ mason_lspconfig.setup_handlers {
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
 
-require('luasnip.loaders.from_vscode').lazy_load()
-luasnip.config.setup {}
+-- require('luasnip.loaders.from_vscode').lazy_load()
+-- luasnip.config.setup {}
 
 ---@diagnostic disable-next-line: missing-fields
 cmp.setup {
@@ -810,28 +814,28 @@ cmp.setup {
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
     },
-    ['<Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif luasnip.expand_or_locally_jumpable() then
-        luasnip.expand_or_jump()
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
-    ['<S-Tab>'] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif luasnip.locally_jumpable(-1) then
-        luasnip.jump(-1)
-      else
-        fallback()
-      end
-    end, { 'i', 's' }),
+    -- ['<Tab>'] = cmp.mapping(function(fallback)
+    --   -- if cmp.visible() then
+    --   --   cmp.select_next_item()
+    --   -- elseif luasnip.expand_or_locally_jumpable() then
+    --     -- luasnip.expand_or_jump()
+    --   -- else
+    --     fallback()
+    --   -- end
+    -- end, { 'i', 's' }),
+    -- ['<S-Tab>'] = cmp.mapping(function(fallback)
+    --   -- if cmp.visible() then
+    --     -- cmp.select_prev_item()
+    --   -- elseif luasnip.locally_jumpable(-1) then
+    --     -- luasnip.jump(-1)
+    --   -- else
+    --     fallback()
+    --   -- end
+    -- end, { 'i', 's' }),
   },
   sources = {
     { name = 'nvim_lsp' },
-    { name = 'luasnip' },
+    -- { name = 'luasnip' },
   },
 }
 

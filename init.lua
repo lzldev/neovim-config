@@ -29,6 +29,7 @@ if vim.g.vscode then
 end
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system {
     'git',
@@ -343,12 +344,16 @@ end, { silent = true, desc = 'Wipes all buffers to the right' })
 
 -- Wipeout Buffers to the left
 vim.keymap.set('n', '<leader>bl', function()
-  vim.cmd '1,.-bw'
+  if not require('utils').is_first_buf() then
+    vim.cmd '1,.-bw'
+  end
 end, { silent = true, desc = 'Wipes all buffers to the left' })
 
 -- Wipeout other buffers
 vim.keymap.set('n', '<leader>bo', function()
-  vim.cmd '1,.-bw'
+  if not require('utils').is_first_buf() then
+    vim.cmd '1,.-bw'
+  end
   vim.cmd '.+,$bw'
 end, { silent = true, desc = 'Wipes all other buffers' })
 
@@ -457,7 +462,6 @@ vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
 vim.keymap.set('n', '<leader>st', require('telescope.builtin').colorscheme, { desc = '[S]earch [T]hemes' })
-
 vim.keymap.set('n', '<leader>sc', require('telescope.builtin').commands, { desc = '[S]earch [C]ommands' })
 vim.keymap.set('n', '<leader>sk', require('telescope.builtin').keymaps, { desc = '[S]earch [K]eymaps' })
 vim.keymap.set('n', '<leader>so', require('telescope.builtin').oldfiles, { desc = '[S]earch [O]ld Files' })
@@ -765,7 +769,7 @@ local servers = {
 
 -- Setup neovim lua configuration
 -- i think this is breaking my nvim cmp so do this.
--- require('neodev').setup()
+require('neodev').setup()
 
 -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
 local capabilities = vim.lsp.protocol.make_client_capabilities()

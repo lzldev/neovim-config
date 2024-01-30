@@ -30,247 +30,235 @@ end
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system {
-    'git',
-    'clone',
-    '--filter=blob:none',
-    'https://github.com/folke/lazy.nvim.git',
-    '--branch=stable', -- latest stable release
-    lazypath,
-  }
-end
-vim.opt.rtp:prepend(lazypath)
+if not package.loaded['lazy'] then
+  if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system {
+      'git',
+      'clone',
+      '--filter=blob:none',
+      'https://github.com/folke/lazy.nvim.git',
+      '--branch=stable', -- latest stable release
+      lazypath,
+    }
+  end
+  vim.opt.rtp:prepend(lazypath)
 
-require('lazy').setup({
-  -- require 'kickstart.plugins.autoformat',
-  -- require 'kickstart.plugins.debug',
-  { import = 'ui' },
-  {
-    'echasnovski/mini.nvim',
-    lazy = false,
-    opts = {},
-    config = function()
-      -- require('mini.ai').setup()
-      -- require('mini.operators').setup()
-      -- require('mini.surround').setup {
-      --   mappings = {
-      --     add = 'S',
-      --   },
-      -- }
-    end,
-  },
-  { 'wakatime/vim-wakatime' },
-  { 'Shatur/neovim-session-manager', opts = {} },
-  { 'nvimdev/hlsearch.nvim', opts = {} },
-  { 'numToStr/Comment.nvim', opts = {} },
-  -- <uwu>Surround</uwu>
-  { 'tpope/vim-surround' },
-  -- Detect tabstop and shiftwidth automatically
-  { 'tpope/vim-sleuth' },
-  {
-    'windwp/nvim-autopairs',
-    -- Optional dependency
-    dependencies = { 'hrsh7th/nvim-cmp' },
-    opts = {},
-    config = function(_, opts)
-      require('nvim-autopairs').setup(opts)
-      -- If you want to automatically add `(` after selecting a function or method
-      local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
-      local cmp = require 'cmp'
-      cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
-    end,
-  },
-  {
-    'ThePrimeagen/harpoon',
-    opts = {},
-  },
-  {
-    'smoka7/hop.nvim',
-    opts = {
-      multi_windows = false,
+  require('lazy').setup({
+    -- require 'kickstart.plugins.autoformat',
+    -- require 'kickstart.plugins.debug',
+    { import = 'ui' },
+    { 'wakatime/vim-wakatime' },
+    { 'Shatur/neovim-session-manager', opts = {} },
+    { 'nvimdev/hlsearch.nvim', opts = {} },
+    { 'numToStr/Comment.nvim', opts = {} },
+    -- <uwu>Surround</uwu>
+    { 'tpope/vim-surround' },
+    -- Detect tabstop and shiftwidth automatically
+    { 'tpope/vim-sleuth' },
+    {
+      'windwp/nvim-autopairs',
+      -- Optional dependency
+      dependencies = { 'hrsh7th/nvim-cmp' },
+      opts = {},
+      config = function(_, opts)
+        require('nvim-autopairs').setup(opts)
+        -- If you want to automatically add `(` after selecting a function or method
+        local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
+        local cmp = require 'cmp'
+        cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
+      end,
     },
-  },
-  -- Git related plugins
-  'tpope/vim-fugitive',
-  'tpope/vim-rhubarb',
-  {
-    -- LSP Configuration & Plugins
-    'neovim/nvim-lspconfig',
-    dependencies = {
-      -- Automatically install LSPs to stdpath for neovim
-      'williamboman/mason.nvim',
-      'williamboman/mason-lspconfig.nvim',
-
-      -- Useful status updates for LSP
-      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
-
-      -- Additional lua configuration, makes nvim stuff amazing!
-      'folke/neodev.nvim',
+    {
+      'ThePrimeagen/harpoon',
+      opts = {},
     },
-  },
-  {
-    -- Autocompletion
-    'hrsh7th/nvim-cmp',
-    dependencies = {
-      -- Snippet Engine & its associated nvim-cmp source
-      'L3MON4D3/LuaSnip',
-      'saadparwaiz1/cmp_luasnip',
-
-      -- Adds LSP completion capabilities
-      'hrsh7th/cmp-nvim-lsp',
-
-      -- Adds a number of user-friendly snippets
-      -- 'rafamadriz/friendly-snippets',
-    },
-  },
-  -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim', opts = {} },
-  {
-    'Shatur/neovim-ayu',
-    priority = 1000,
-  },
-  {
-    'gambhirsharma/vesper.nvim',
-    priority = 1000,
-  },
-  {
-    'nyoom-engineering/oxocarbon.nvim',
-    priority = 1000,
-  },
-  {
-    'rose-pine/neovim',
-    priority = 1000,
-  },
-  {
-    'navarasu/onedark.nvim',
-    priority = 1000,
-  },
-  {
-    'nvim-neo-tree/neo-tree.nvim',
-    version = '*',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      'nvim-tree/nvim-web-devicons', -- not strictly required, but recommended
-      'MunifTanjim/nui.nvim',
-    },
-    opts = {
-      filesystem = {
-        hijack_netrw_behavior = 'open_current',
-        filtered_items = {
-          hide_dotfiles = false,
-          hide_hidden = false,
-        },
-        follow_current_file = {
-          enabled = true,
-          leave_dirs_open = false,
-        },
+    {
+      'smoka7/hop.nvim',
+      opts = {
+        multi_windows = false,
       },
     },
-  },
-  {
-    -- Add indentation guides even on blank lines
-    'lukas-reineke/indent-blankline.nvim',
-    -- Enable `lukas-reineke/indent-blankline.nvim`
-    -- See `:help ibl`
-    main = 'ibl',
-    opts = {},
-  },
+    -- Git related plugins
+    'tpope/vim-fugitive',
+    'tpope/vim-rhubarb',
+    {
+      -- LSP Configuration & Plugins
+      'neovim/nvim-lspconfig',
+      dependencies = {
+        -- Automatically install LSPs to stdpath for neovim
+        'williamboman/mason.nvim',
+        'williamboman/mason-lspconfig.nvim',
 
-  -- Fuzzy Finder (files, lsp, etc)
-  {
-    'nvim-telescope/telescope.nvim',
-    lazy = true,
-    branch = '0.1.x',
-    opts = {
-      pickers = {
-        find_files = {
-          hidden = true,
-        },
+        -- Useful status updates for LSP
+        -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
+        { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+
+        -- Additional lua configuration, makes nvim stuff amazing!
+        'folke/neodev.nvim',
       },
-      defaults = {
-        sorting_strategy = 'ascending',
-        layout_strategy = 'horizontal',
-        layout_config = {
-          horizontal = { prompt_position = 'top', anchor = 'top' },
-        },
-        mappings = {
-          i = {
-            ['<C-u>'] = false,
-            ['<C-d>'] = false,
+    },
+    {
+      -- Autocompletion
+      'hrsh7th/nvim-cmp',
+      dependencies = {
+        -- Snippet Engine & its associated nvim-cmp source
+        'L3MON4D3/LuaSnip',
+        'saadparwaiz1/cmp_luasnip',
+
+        -- Adds LSP completion capabilities
+        'hrsh7th/cmp-nvim-lsp',
+        'hrsh7th/cmp-path'
+
+        -- Adds a number of user-friendly snippets
+        -- 'rafamadriz/friendly-snippets',
+      },
+    },
+    -- Useful plugin to show you pending keybinds.
+    { 'folke/which-key.nvim', opts = {} },
+    {
+      'Shatur/neovim-ayu',
+      priority = 1000,
+    },
+    {
+      'gambhirsharma/vesper.nvim',
+      priority = 1000,
+    },
+    {
+      'nyoom-engineering/oxocarbon.nvim',
+      priority = 1000,
+    },
+    {
+      'rose-pine/neovim',
+      priority = 1000,
+    },
+    {
+      'navarasu/onedark.nvim',
+      priority = 1000,
+    },
+    {
+      'nvim-neo-tree/neo-tree.nvim',
+      version = '*',
+      dependencies = {
+        'nvim-lua/plenary.nvim',
+        'nvim-tree/nvim-web-devicons', -- not strictly required, but recommended
+        'MunifTanjim/nui.nvim',
+      },
+      opts = {
+        filesystem = {
+          hijack_netrw_behavior = 'open_current',
+          filtered_items = {
+            hide_dotfiles = false,
+            hide_hidden = false,
+          },
+          follow_current_file = {
+            enabled = true,
+            leave_dirs_open = false,
           },
         },
       },
     },
-    config = function(_, opts)
-      require('telescope').setup(opts)
-      -- Enable telescope fzf native, if installed
-      pcall(require('telescope').load_extension, 'fzf')
+    {
+      -- Add indentation guides even on blank lines
+      'lukas-reineke/indent-blankline.nvim',
+      -- Enable `lukas-reineke/indent-blankline.nvim`
+      -- See `:help ibl`
+      main = 'ibl',
+      opts = {},
+    },
+    -- Fuzzy Finder (files, lsp, etc)
+    {
+      'nvim-telescope/telescope.nvim',
+      lazy = true,
+      branch = '0.1.x',
+      opts = {
+        pickers = {
+          find_files = {
+            hidden = true,
+          },
+        },
+        defaults = {
+          sorting_strategy = 'ascending',
+          layout_strategy = 'horizontal',
+          layout_config = {
+            horizontal = { prompt_position = 'top', anchor = 'top' },
+          },
+          mappings = {
+            i = {
+              ['<C-u>'] = false,
+              ['<C-d>'] = false,
+            },
+          },
+        },
+      },
+      config = function(_, opts)
+        require('telescope').setup(opts)
+        -- Enable telescope fzf native, if installed
+        pcall(require('telescope').load_extension, 'fzf')
 
-      require('telescope').load_extension 'ui-select'
-    end,
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      -- Fuzzy Finder Algorithm which requires local dependencies to be built.
-      -- Only load if `make` is available. Make sure you have the system
-      -- requirements installed.
-      {
-        'nvim-telescope/telescope-fzf-native.nvim',
-        lazy = true,
-        -- NOTE: If you are having trouble with this installation,
-        --       refer to the README for telescope-fzf-native for more instructions.
-        build = 'make',
-        cond = function()
-          return vim.fn.executable 'make' == 1
-        end,
+        require('telescope').load_extension 'ui-select'
+      end,
+      dependencies = {
+        'nvim-lua/plenary.nvim',
+        -- Fuzzy Finder Algorithm which requires local dependencies to be built.
+        -- Only load if `make` is available. Make sure you have the system
+        -- requirements installed.
+        {
+          'nvim-telescope/telescope-fzf-native.nvim',
+          lazy = true,
+          -- NOTE: If you are having trouble with this installation,
+          --       refer to the README for telescope-fzf-native for more instructions.
+          build = 'make',
+          cond = function()
+            return vim.fn.executable 'make' == 1
+          end,
+        },
       },
     },
-  },
-  { 'nvim-telescope/telescope-ui-select.nvim', lazy = true, opts = {} },
-  {
-    -- Highlight, edit, and navigate code
-    'nvim-treesitter/nvim-treesitter',
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter-textobjects',
+    { 'nvim-telescope/telescope-ui-select.nvim', lazy = true, opts = {} },
+    {
+      -- Highlight, edit, and navigate code
+      'nvim-treesitter/nvim-treesitter',
+      dependencies = {
+        { 'nvim-treesitter/nvim-treesitter-textobjects' },
+      },
+      build = ':TSUpdate',
     },
-    build = ':TSUpdate',
-  },
-  {
-    'mhartington/formatter.nvim',
-  },
-  {
-    'treesitter-tohtml.nvim',
-    lazy = false,
-    enabled = true,
-    dev = true,
-  },
-}, {
-  performance = {
-    cache = {
+    {
+      'mhartington/formatter.nvim',
+    },
+    {
+      'treesitter-tohtml.nvim',
+      lazy = false,
       enabled = true,
+      dev = true,
     },
-    rtp = {
-      -- disables regular vim plugins
-      disabled_plugins = {
-        'gzip',
-        -- 'matchit',
-        -- 'matchparen',
-        'netrwPlugin',
-        'tarPlugin',
-        -- 'tohtml',
-        'zipPlugin',
+  }, {
+    performance = {
+      cache = {
+        enabled = true,
+      },
+      rtp = {
+        -- disables regular vim plugins
+        disabled_plugins = {
+          'gzip',
+          -- 'matchit',
+          -- 'matchparen',
+          'netrwPlugin',
+          'tarPlugin',
+          -- 'tohtml',
+          'zipPlugin',
+        },
       },
     },
-  },
-  dev = {
-    path = '~/code/nvim-plugins',
-  },
-  -- profiling = {
-  --   loader = true,
-  --   require = true,
-  -- },
-})
+    dev = {
+      path = '~/code/nvim-plugins',
+    },
+    -- profiling = {
+    --   loader = true,
+    --   require = true,
+    -- },
+  })
+end
 
 -- Theme
 require 'custom.highlights'
@@ -808,6 +796,14 @@ cmp.setup {
       luasnip.lsp_expand(args.body)
     end,
   },
+  completion = {
+    completeopt = 'menu,menuone,noinsert'
+  },
+  sources = {
+    { name = 'nvim_lsp' },
+    { name = 'sources' },
+    -- { name = 'luasnip' },
+  },
   mapping = cmp.mapping.preset.insert {
     ['<C-n>'] = cmp.mapping.select_next_item(),
     ['<C-p>'] = cmp.mapping.select_prev_item(),
@@ -836,10 +832,6 @@ cmp.setup {
     --     fallback()
     --   -- end
     -- end, { 'i', 's' }),
-  },
-  sources = {
-    { name = 'nvim_lsp' },
-    -- { name = 'luasnip' },
   },
 }
 

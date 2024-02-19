@@ -47,6 +47,20 @@ if not package.loaded['lazy'] then
     -- require 'kickstart.plugins.autoformat',
     -- require 'kickstart.plugins.debug',
     { import = 'ui' },
+    {
+      'folke/noice.nvim',
+      lazy = false,
+      event = 'VeryLazy',
+      dependencies = {
+        -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
+        'MunifTanjim/nui.nvim',
+        -- OPTIONAL:
+        --   `nvim-notify` is only needed, if you want to use the notification view.
+        --   If not available, we use `mini` as the fallback
+        'rcarriga/nvim-notify',
+      },
+      opts = {},
+    },
     { 'wakatime/vim-wakatime' },
     { 'Shatur/neovim-session-manager', opts = {} },
     { 'nvimdev/hlsearch.nvim', opts = {} },
@@ -107,7 +121,7 @@ if not package.loaded['lazy'] then
 
         -- Adds LSP completion capabilities
         'hrsh7th/cmp-nvim-lsp',
-        'hrsh7th/cmp-path'
+        'hrsh7th/cmp-path',
 
         -- Adds a number of user-friendly snippets
         -- 'rafamadriz/friendly-snippets',
@@ -275,6 +289,15 @@ autocmds.start_terminal_in_insert_mode()
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
 
+-- Move Lines
+vim.keymap.set({ 'n' }, '<A-k>', ':m .-2<CR>==', { silent = true })
+vim.keymap.set({ 'v' }, '<A-k>', ":m '<-2<CR>gv=gv", { silent = true })
+vim.keymap.set({ 'i' }, '<A-k>', '<Esc>:m .-2<CR>==gi', { silent = true })
+
+vim.keymap.set({ 'n' }, '<A-j>', ':m .+1<CR>==', { silent = true })
+vim.keymap.set({ 'v' }, '<A-j>', ":m '>+1<CR>gv=gv", { silent = true })
+vim.keymap.set({ 'i' }, '<A-j>', '<Esc>:m .+1<CR>==gi', { silent = true })
+
 --ALTERNATE FILE
 vim.keymap.set('n', '<C-0>', '<C-6>', { silent = true, desc = ' go to alternate file ' })
 
@@ -375,6 +398,11 @@ vim.keymap.set('n', '<leader>uw', function()
   vim.wo.wrap = not vim.wo.wrap
   vim.print('Wrap : ' .. vim.inspect(vim.wo.wrap))
 end, { silent = true, desc = 'Toggle wrap' })
+
+-- Noice Dismiss
+vim.keymap.set('n', '<leader>ud', function()
+  vim.cmd['NoiceDismiss']()
+end, { silent = true, desc = '[NOICE] Dismiss notifications' })
 
 --------------------------------------------------------------------------------
 -------------------------------- Plugin Mappings -------------------------------
@@ -555,6 +583,12 @@ local on_attach = function(_, bufnr)
     vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
   end
 
+  if not not vim.lsp.inlay_hint then
+    nmap('<A-l>', function()
+      vim.lsp.inlay_hint.enable(0, not vim.lsp.inlay_hint.is_enabled())
+    end, [[Toggle inlay hints]])
+  end
+
   -- TS SERVER - CAPABILITIES
   -- local caps = {
   --   server_capabilities = {
@@ -635,6 +669,9 @@ require('formatter').setup {
     return workspace_root
   end,
   filetype = {
+    -- c = {
+    --   require('formatter.filetypes.c').clangformat,
+    -- },
     rust = {
       require('formatter.filetypes.rust').rustfmt,
     },
@@ -667,10 +704,19 @@ require('formatter').setup {
 
 -- Enable the following language servers
 local servers = {
-  -- clangd = {},
+  clangd = {},
   -- gopls = {},
   -- pyright = {},
-  rust_analyzer = {},
+  rust_analyzer = {
+    ['rust-analyzer'] = {
+      check = {
+        allTargets = false,
+      },
+      diagnostics = {
+        enable = false,
+      },
+    },
+  },
   --
   tailwindcss = {
     filetypes = {
@@ -797,7 +843,7 @@ cmp.setup {
     end,
   },
   completion = {
-    completeopt = 'menu,menuone,noinsert'
+    completeopt = 'menu,menuone,noinsert',
   },
   sources = {
     { name = 'nvim_lsp' },

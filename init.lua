@@ -47,6 +47,10 @@ if not package.loaded['lazy'] then
     -- require 'kickstart.plugins.autoformat',
     -- require 'kickstart.plugins.debug',
     { import = 'ui' },
+
+    { 'rcarriga/nvim-notify', opts = {
+      timeout = 1000,
+    } },
     {
       'folke/noice.nvim',
       lazy = false,
@@ -54,9 +58,6 @@ if not package.loaded['lazy'] then
       dependencies = {
         -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
         'MunifTanjim/nui.nvim',
-        -- OPTIONAL:
-        --   `nvim-notify` is only needed, if you want to use the notification view.
-        --   If not available, we use `mini` as the fallback
         'rcarriga/nvim-notify',
       },
       opts = {},
@@ -208,8 +209,8 @@ if not package.loaded['lazy'] then
         require('telescope').setup(opts)
         -- Enable telescope fzf native, if installed
         pcall(require('telescope').load_extension, 'fzf')
-
-        require('telescope').load_extension 'ui-select'
+        pcall(require('telescope').load_extension, 'notify')
+        pcall(require('telescope').load_extension, 'ui-select')
       end,
       dependencies = {
         'nvim-lua/plenary.nvim',
@@ -239,12 +240,6 @@ if not package.loaded['lazy'] then
     },
     {
       'mhartington/formatter.nvim',
-    },
-    {
-      'treesitter-tohtml.nvim',
-      lazy = false,
-      enabled = true,
-      dev = true,
     },
   }, {
     performance = {
@@ -333,7 +328,7 @@ vim.keymap.set('t', '<C-Space>', '<C-\\><C-n><C-w>h', { silent = true, desc = 'g
 -- Lazygit
 vim.keymap.set('n', '<leader>gg', function()
   vim.cmd.term 'lazygit'
-end, { silent = true, desc = 'opens lazygit' })
+end, { silent = true, desc = 'Open lazygit' })
 
 -- Term splits
 vim.keymap.set('n', '<leader>tv', function()
@@ -346,6 +341,7 @@ end, { silent = true, desc = 'terminal in horizontal [S]plit' })
 -- Buffers
 vim.keymap.set('n', '<A-Tab>', vim.cmd.bn, { silent = true, desc = 'Next Buffer' })
 vim.keymap.set('n', '<A-S-Tab>', vim.cmd.bp, { silent = true, desc = 'Previous Buffer' })
+
 
 vim.keymap.set('n', '<leader>c', vim.cmd.bw, { silent = true, desc = 'Wipeout Buffer' })
 -- Wipeout buffers to the right
@@ -399,10 +395,8 @@ vim.keymap.set('n', '<leader>uw', function()
   vim.print('Wrap : ' .. vim.inspect(vim.wo.wrap))
 end, { silent = true, desc = 'Toggle wrap' })
 
--- Noice Dismiss
-vim.keymap.set('n', '<leader>ud', function()
-  vim.cmd['NoiceDismiss']()
-end, { silent = true, desc = '[NOICE] Dismiss notifications' })
+-- Dismiss Notifications Dismiss
+vim.keymap.set('n', '<leader>ud', require('notify').dismiss, { silent = true, desc = '[N] Dismiss notifications' })
 
 --------------------------------------------------------------------------------
 -------------------------------- Plugin Mappings -------------------------------
@@ -451,12 +445,14 @@ vim.keymap.set('n', '<A-6>', function()
   require('harpoon.ui').nav_file(6)
 end, { silent = true })
 
--- TELESCOPE Mappings
+--------------------------------------------------------------------------------
+-------------------------------- Telescope -------------------------------------
+--------------------------------------------------------------------------------
+
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').oldfiles, { desc = '[?] Find recently opened files' })
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers, { desc = '[ ] Find existing buffers' })
 vim.keymap.set('n', '<leader>"', require('telescope.builtin').registers, { desc = 'Find in Registers' })
 vim.keymap.set('n', "<leader>'", require('telescope.builtin').marks, { desc = 'Find in Marks' })
-
 vim.keymap.set('n', '<leader>/', function()
   -- You can pass additional configuration to telescope to change theme, layout, etc.
   require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
@@ -487,7 +483,15 @@ vim.keymap.set('n', '<leader>sm', function()
   }
 end, { desc = '[S]earch [O]ld Files' })
 
--- [[ Configure Treesitter ]]
+--------------------------------------------------------------------------------
+---------------------------- Telescope Extension -------------------------------
+--------------------------------------------------------------------------------
+
+vim.keymap.set('n', '<leader>sn', require('telescope').extensions.notify.notify, { desc = '[S]earch [N]otifications' })
+
+--------------------------------------------------------------------------------
+---------------------------- Treesitter Config ---------------------------------
+--------------------------------------------------------------------------------
 vim.defer_fn(function()
   require('nvim-treesitter.configs').setup {
     modules = {},
@@ -567,13 +571,19 @@ vim.defer_fn(function()
   }
 end, 0)
 
+--------------------------------------------------------------------------------
+---------------------------------- LSP -----------------------------------------
+--------------------------------------------------------------------------------
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
 
--- [[ Configure LSP ]]
+--
+--
+
 local on_attach = function(_, bufnr)
   local nmap = function(keys, func, desc)
     if desc then
@@ -588,23 +598,6 @@ local on_attach = function(_, bufnr)
       vim.lsp.inlay_hint.enable(0, not vim.lsp.inlay_hint.is_enabled())
     end, [[Toggle inlay hints]])
   end
-
-  -- TS SERVER - CAPABILITIES
-  -- local caps = {
-  --   server_capabilities = {
-  --     executeCommandProvider = {
-  --       commands = {
-  --         '_typescript.applyWorkspaceEdit',
-  --         '_typescript.applyCodeAction',
-  --         '_typescript.applyRefactoring',
-  --         '_typescript.configurePlugin',
-  --         '_typescript.organizeImports',
-  --         '_typescript.applyRenameFile',
-  --         '_typescript.goToSourceDefinition',
-  --       },
-  --     },
-  --   },
-  -- }
 
   nmap('<leader>lr', vim.lsp.buf.rename, '[R]ename')
   nmap('<leader>la', vim.lsp.buf.code_action, 'Code [A]ction')
@@ -653,6 +646,7 @@ require('which-key').register {
   ['<leader>b'] = { name = '[B]uffers', _ = 'which_key_ignore' },
   ['<leader>t'] = { name = '[T]eminal', _ = 'which_key_ignore' },
   ['<leader>l'] = { name = '[L]SP', _ = 'which_key_ignore' },
+  ['<leader>n'] = { name = '[N]otifications', _ = 'which_key_ignore' },
   ['<C-G>'] = { name = 'print filename', _ = 'which_key_ignore' },
 }
 
@@ -669,6 +663,9 @@ require('formatter').setup {
     return workspace_root
   end,
   filetype = {
+    ['*'] = {
+      require('formatter.filetypes.any').remove_trailing_whitespace,
+    },
     -- c = {
     --   require('formatter.filetypes.c').clangformat,
     -- },

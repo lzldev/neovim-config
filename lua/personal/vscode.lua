@@ -21,10 +21,11 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   {
+    { 'michaeljsmith/vim-indent-object' },
     {
-      'nvim-treesitter/nvim-treesitter',
+      'nvim-treesitter/nvim-treesitter-textobjects',
       dependencies = {
-        'nvim-treesitter/nvim-treesitter-textobjects',
+        'nvim-treesitter/nvim-treesitter',
       },
       build = ':TSUpdate',
     },
@@ -138,7 +139,7 @@ vim.defer_fn(function()
 end, 0)
 
 -- Register autocommands
-require('custom.autocommands').highlight_on_yank()
+require('personal.autocommands').highlight_on_yank()
 
 --------------------------------------------------------------------------------
 -- Mappings --------------------------------------------------------------------
@@ -160,7 +161,7 @@ vim.keymap.set('n', '<C-q>', vim.cmd.wqa, { silent = true })
 vim.keymap.set('n', '<C-s>', vim.cmd.w, { silent = true })
 
 --------------------------------------------------------------------------------
--- CUSTOM VSCODE STUFF ---------------------------------------------------------
+-- VSCODE Commands -------------------------------------------------------------
 --------------------------------------------------------------------------------
 
 local vscode = require 'vscode-neovim'

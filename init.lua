@@ -2,7 +2,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- custom options
-vim.g.transparent = false -- removes background on colorschemeload
+vim.g.transparent = true -- removes background on colorschemeload
 
 -- NVIM options
 vim.o.termguicolors = true
@@ -24,7 +24,7 @@ vim.o.timeoutlen = 300
 vim.o.completeopt = 'menuone,noselect'
 
 if vim.g.vscode then
-  require 'custom.vscode'
+  require 'personal.vscode'
   return
 end
 
@@ -47,7 +47,6 @@ if not package.loaded['lazy'] then
     -- require 'kickstart.plugins.autoformat',
     -- require 'kickstart.plugins.debug',
     { import = 'ui' },
-
     { 'rcarriga/nvim-notify', opts = {
       timeout = 1000,
     } },
@@ -59,8 +58,42 @@ if not package.loaded['lazy'] then
         -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries
         'MunifTanjim/nui.nvim',
         'rcarriga/nvim-notify',
+        'hrsh7th/nvim-cmp',
       },
-      opts = {},
+      opts = {
+        lsp = {
+          override = {
+            ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
+            ['vim.lsp.util.stylize_markdown'] = true,
+            ['cmp.entry.get_documentation'] = true, -- requires hrsh7th/nvim-cmp
+          },
+        },
+        hover = {
+          enabled = true,
+          silent = false, -- set to true to not show a message if hover is not available
+          view = nil, -- when nil, use defaults from documentation
+          ---@type NoiceViewOptions
+          opts = {}, -- merged with defaults from documentation
+        },
+        documentation = {
+          view = 'hover',
+          ---@type NoiceViewOptions
+          opts = {
+            lang = 'markdown',
+            replace = true,
+            render = 'plain',
+            format = { '{message}' },
+            win_options = { concealcursor = 'n', conceallevel = 3 },
+          },
+        },
+        presets = {
+          bottom_search = true, -- use a classic bottom cmdline for search
+          command_palette = true, -- position the cmdline and popupmenu together
+          long_message_to_split = true, -- long messages will be sent to a split
+          inc_rename = false, -- enables an input dialog for inc-rename.nvim
+          lsp_doc_border = true, -- add a border to hover docs and signature help
+        },
+      },
     },
     { 'wakatime/vim-wakatime' },
     { 'Shatur/neovim-session-manager', opts = {} },
@@ -138,6 +171,7 @@ if not package.loaded['lazy'] then
       'gambhirsharma/vesper.nvim',
       priority = 1000,
     },
+    { 'ellisonleao/gruvbox.nvim' },
     {
       'nyoom-engineering/oxocarbon.nvim',
       priority = 1000,
@@ -167,7 +201,7 @@ if not package.loaded['lazy'] then
           },
           follow_current_file = {
             enabled = true,
-            leave_dirs_open = false,
+            leave_dirs_open = true,
           },
         },
       },
@@ -230,6 +264,7 @@ if not package.loaded['lazy'] then
       },
     },
     { 'nvim-telescope/telescope-ui-select.nvim', lazy = true, opts = {} },
+    { 'michaeljsmith/vim-indent-object' },
     {
       -- Highlight, edit, and navigate code
       'nvim-treesitter/nvim-treesitter',
@@ -270,11 +305,11 @@ if not package.loaded['lazy'] then
 end
 
 -- Theme
-require 'custom.highlights'
-vim.cmd.colorscheme 'rose-pine-main'
+require 'personal.highlights'
+vim.cmd.colorscheme 'rose-pine'
 
 -- Autocommands
-local autocmds = require 'custom.autocommands'
+local autocmds = require 'personal.autocommands'
 
 autocmds.highlight_on_yank()
 autocmds.start_terminal_in_insert_mode()
@@ -341,7 +376,6 @@ end, { silent = true, desc = 'terminal in horizontal [S]plit' })
 -- Buffers
 vim.keymap.set('n', '<A-Tab>', vim.cmd.bn, { silent = true, desc = 'Next Buffer' })
 vim.keymap.set('n', '<A-S-Tab>', vim.cmd.bp, { silent = true, desc = 'Previous Buffer' })
-
 
 vim.keymap.set('n', '<leader>c', vim.cmd.bw, { silent = true, desc = 'Wipeout Buffer' })
 -- Wipeout buffers to the right
@@ -411,6 +445,7 @@ vim.keymap.set('n', '<leader>pm', vim.cmd.Mason, { silent = true, desc = 'Open M
 vim.keymap.set('n', '<leader>o', function()
   require('neo-tree.command').execute {
     action = 'show',
+    reveal = true ,
     position = 'current',
   }
 end, { silent = true, desc = 'Toggles Neotree' })
@@ -511,6 +546,9 @@ vim.defer_fn(function()
       'vimdoc',
       'vim',
       'bash',
+      'regex',
+      'markdown',
+      'markdown_inline',
     },
     auto_install = true,
     highlight = { enable = true },
@@ -607,8 +645,12 @@ local on_attach = function(_, bufnr)
   -- nmap('<leader>lc', require('telescope.builtin').lsp_document_symbols, '[F]ile Symbols')
 
   nmap('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+  nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+  nmap('gi', vim.lsp.buf.implementation, '[G]oto [D]eclaration')
+
   nmap('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
   nmap('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+
   nmap('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
   nmap('<leader>Ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
 
@@ -620,7 +662,6 @@ local on_attach = function(_, bufnr)
   --Format
   nmap('<leader>j', vim.cmd.Format, 'Format')
   -- Lesser used LSP functionality
-  nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
   nmap('<leader>Wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
   nmap('<leader>Wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
   nmap('<leader>Wl', function()
@@ -675,18 +716,24 @@ require('formatter').setup {
     html = {
       require('formatter.filetypes.javascript').prettierd,
     },
+    kotlin = {
+      require('formatter.filetypes.kotlin').ktlint(),
+    },
+    java = {
+      require('formatter.filetypes.java').clangformat(),
+    },
     javascript = {
       require('formatter.filetypes.javascript').prettierd,
     },
     javascriptreact = {
-      require('custom.formatters').rustywind,
+      require('personal.formatters').rustywind,
       require('formatter.filetypes.javascriptreact').prettierd,
     },
     typescript = {
       require('formatter.filetypes.typescript').prettierd,
     },
     typescriptreact = {
-      require('custom.formatters').rustywind,
+      require('personal.formatters').rustywind,
       require('formatter.filetypes.typescriptreact').prettierd,
     },
     go = { require('formatter.filetypes.go').gofmt() },
@@ -714,6 +761,10 @@ local servers = {
       },
     },
   },
+  -- Java/Kotlin
+  kotlin_language_server = {},
+  ast_grep = {},
+  jdtls = {},
   --
   tailwindcss = {
     filetypes = {
@@ -768,6 +819,7 @@ local servers = {
     },
   },
   eslint = {},
+  elixirls = {},
   tsserver = {
     implicitProjectConfig = { checkJs = true },
     preferences = { useAliasesForRenames = false },
@@ -878,7 +930,7 @@ cmp.setup {
   },
 }
 
-require 'custom.globals'
+require 'personal.globals'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

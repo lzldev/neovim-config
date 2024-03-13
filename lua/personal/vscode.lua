@@ -194,6 +194,10 @@ vim.keymap.set('n', '<leader>k', function()
   vscode.action 'workbench.action.showCommands'
 end, { silent = true })
 
+--------------------------------------------------------------------------------
+-- Manage Editors --------------------------------------------------------------
+--------------------------------------------------------------------------------
+
 -- Close Current Editor
 vim.keymap.set('n', '<leader>c', function()
   vscode.action 'workbench.action.closeActiveEditor'
@@ -203,6 +207,25 @@ end, { silent = true })
 vim.keymap.set('n', '<leader>ba', function()
   vscode.action 'workbench.action.closeAllEditors'
 end, { silent = true })
+
+-- Close Editors to the left
+vim.keymap.set('n', '<leader>bl', function()
+  vscode.action 'workbench.action.closeEditorsToTheLeft'
+end, { silent = true })
+
+-- Close Editors to the right
+vim.keymap.set('n', '<leader>br', function()
+  vscode.action 'workbench.action.closeEditorsToTheRight'
+end, { silent = true })
+
+-- Close Other Editors
+vim.keymap.set('n', '<leader>bo', function()
+  vscode.action 'workbench.action.closeOtherEditors'
+end, { silent = true })
+
+--  workbench.action.closeEditorsToTheLeft
+--  workbench.action.closeEditorsToTheRight
+--  workbench.action.closeOtherEditors
 
 -- Toggle Sidebar
 vim.keymap.set('n', '<leader>o', function()

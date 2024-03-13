@@ -44,8 +44,6 @@ if not package.loaded['lazy'] then
   vim.opt.rtp:prepend(lazypath)
 
   require('lazy').setup({
-    -- require 'kickstart.plugins.autoformat',
-    -- require 'kickstart.plugins.debug',
     { import = 'ui' },
     { 'rcarriga/nvim-notify', opts = {
       timeout = 1000,

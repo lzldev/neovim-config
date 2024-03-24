@@ -419,6 +419,7 @@ end, { silent = true, desc = 'Toggle Background' })
 vim.keymap.set('n', '<leader>ut', function()
   vim.g.transparent = not vim.g.transparent
   vim.print('transparent : ' .. vim.inspect(vim.g.transparent))
+  vim.cmd.colorscheme(vim.g.colors_name)
 end, { silent = true, desc = 'Toggle transparency' })
 
 -- Toggle Wrap
@@ -443,7 +444,7 @@ vim.keymap.set('n', '<leader>pm', vim.cmd.Mason, { silent = true, desc = 'Open M
 vim.keymap.set('n', '<leader>o', function()
   require('neo-tree.command').execute {
     action = 'show',
-    reveal = true ,
+    reveal = true,
     position = 'current',
   }
 end, { silent = true, desc = 'Toggles Neotree' })
@@ -506,7 +507,9 @@ vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { de
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
 vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
-vim.keymap.set('n', '<leader>st', require('telescope.builtin').colorscheme, { desc = '[S]earch [T]hemes' })
+vim.keymap.set('n', '<leader>st', function()
+  require('telescope.builtin').colorscheme { enable_preview = true }
+end, { desc = '[S]earch [T]hemes' })
 vim.keymap.set('n', '<leader>sc', require('telescope.builtin').commands, { desc = '[S]earch [C]ommands' })
 vim.keymap.set('n', '<leader>sk', require('telescope.builtin').keymaps, { desc = '[S]earch [K]eymaps' })
 vim.keymap.set('n', '<leader>so', require('telescope.builtin').oldfiles, { desc = '[S]earch [O]ld Files' })

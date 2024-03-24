@@ -22,6 +22,7 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   {
     { 'michaeljsmith/vim-indent-object' },
+    { 'michaeljsmith/vim-indent-object' },
     {
       'nvim-treesitter/nvim-treesitter-textobjects',
       dependencies = {
@@ -153,8 +154,8 @@ vim.keymap.set('n', '<C-0>', '<C-6>', { silent = true, desc = ' go to alternate 
 -- vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
 -- Center after scroll
-vim.keymap.set('n', '<C-d>', '<C-d>zz', { silent = true })
-vim.keymap.set('n', '<C-u>', '<C-u>zz', { silent = true })
+-- vim.keymap.set('n', '<C-d>', '<C-d>zz', { silent = true })
+-- vim.keymap.set('n', '<C-u>', '<C-u>zz', { silent = true })
 
 -- Write and quit all
 vim.keymap.set('n', '<C-q>', vim.cmd.wqa, { silent = true })
@@ -222,10 +223,6 @@ end, { silent = true })
 vim.keymap.set('n', '<leader>bo', function()
   vscode.action 'workbench.action.closeOtherEditors'
 end, { silent = true })
-
---  workbench.action.closeEditorsToTheLeft
---  workbench.action.closeEditorsToTheRight
---  workbench.action.closeOtherEditors
 
 -- Toggle Sidebar
 vim.keymap.set('n', '<leader>o', function()

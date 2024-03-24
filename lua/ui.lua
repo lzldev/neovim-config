@@ -16,7 +16,10 @@ return {
   },
   {
     'stevearc/aerial.nvim',
-    opts = {},
+    opts = {
+
+      backends = { 'lsp', 'treesitter', 'markdown', 'asciidoc', 'man' },
+    },
     -- Optional dependencies
     dependencies = {
       'nvim-treesitter/nvim-treesitter',
@@ -43,7 +46,9 @@ return {
           {
             'mode',
             fmt = function(s)
-              if s == "NORMAL" then return " " end
+              if s == 'NORMAL' then
+                return ' '
+              end
               return s:sub(1, 1):upper()
             end,
           },

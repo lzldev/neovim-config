@@ -23,6 +23,8 @@ vim.o.updatetime = 250
 vim.o.timeoutlen = 300
 vim.o.completeopt = 'menuone,noselect'
 
+vim.o.tabstop = 2
+
 if vim.g.vscode then
   require 'personal.vscode'
   return
@@ -750,8 +752,13 @@ require('formatter').setup {
 -- Enable the following language servers
 local servers = {
   clangd = {},
-  -- gopls = {},
+  gopls = {
+    build = {
+      templateExtensions = {"tmpl",".tmpl"}
+    }
+  },
   -- pyright = {},
+  templ = {},
   rust_analyzer = {
     ['rust-analyzer'] = {
       check = {
@@ -765,7 +772,9 @@ local servers = {
   -- Java/Kotlin
   kotlin_language_server = {},
   ast_grep = {},
-  jdtls = {},
+  jdtls = {
+    ""
+  },
   --
   tailwindcss = {
     filetypes = {

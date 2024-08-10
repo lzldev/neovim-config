@@ -167,6 +167,13 @@ vim.keymap.set('n', '<C-s>', vim.cmd.w, { silent = true })
 
 local vscode = require 'vscode-neovim'
 
+-- Context Menu 
+vim.keymap.set('n', 'M', function()
+  vscode.action 'editor.action.showContextMenu'
+end, { silent = true })
+
+
+-- Function Signature
 vim.keymap.set('n', 'L', function()
   vscode.action 'editor.action.triggerParameterHints'
 end, { silent = true })

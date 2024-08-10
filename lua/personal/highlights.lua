@@ -4,7 +4,14 @@ local hi_transparent = {
 }
 
 local hi_overrides = {
-  defaults = {},
+  defaults = {
+    NotifyBackground = { 'guibg=#000000' },
+  },
+  ayu = {
+    LineNrAbove = { 'guifg=#39bae6' },
+    LineNrBelow = { 'guifg=#39bae6' },
+    LineNr = {'guifg=#ffb454'}
+  },
   oxocarbon = {
     Comment = { 'guifg=#de95ff' },
     -- Comment = { 'guifg=#fcb5c6' },

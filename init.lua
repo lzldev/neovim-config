@@ -710,9 +710,9 @@ require('formatter').setup {
     ['*'] = {
       require('formatter.filetypes.any').remove_trailing_whitespace,
     },
-    -- c = {
-    --   require('formatter.filetypes.c').clangformat,
-    -- },
+    c = {
+      require('formatter.filetypes.c').clangformat,
+    },
     rust = {
       require('formatter.filetypes.rust').rustfmt,
     },
@@ -762,7 +762,7 @@ local servers = {
   rust_analyzer = {
     ['rust-analyzer'] = {
       check = {
-        allTargets = false,
+        allTargets = true,
       },
       diagnostics = {
         enable = false,

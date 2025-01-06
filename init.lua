@@ -162,7 +162,11 @@ if not package.loaded['lazy'] then
       },
     },
     -- Useful plugin to show you pending keybinds.
-    { 'folke/which-key.nvim', opts = {} },
+    { 'folke/which-key.nvim', opts = {},
+      dependencies = {
+        'echasnovski/mini.icons'
+      },
+    },
     {
       'Shatur/neovim-ayu',
       priority = 1000,
@@ -710,6 +714,12 @@ require('formatter').setup {
     ['*'] = {
       require('formatter.filetypes.any').remove_trailing_whitespace,
     },
+    clojure = {
+      require('formatter.filetypes.cpp').remove_trailing_whitespace,
+    },
+    python = {
+      require('formatter.filetypes.python').remove_trailing_whitespace,
+    },
     c = {
       require('formatter.filetypes.c').clangformat,
     },
@@ -753,11 +763,11 @@ require('formatter').setup {
 local servers = {
   clangd = {},
   gopls = {
-    build = {
-      templateExtensions = {"tmpl",".tmpl"}
-    }
+    -- build = {
+    --   templateExtensions = {"tmpl",".tmpl"}
+    -- }
   },
-  -- pyright = {},
+  pyright = {},
   templ = {},
   rust_analyzer = {
     ['rust-analyzer'] = {

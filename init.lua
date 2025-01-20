@@ -162,11 +162,9 @@ if not package.loaded['lazy'] then
       },
     },
     -- Useful plugin to show you pending keybinds.
-    { 'folke/which-key.nvim', opts = {},
-      dependencies = {
-        'echasnovski/mini.icons'
-      },
-    },
+    { 'folke/which-key.nvim', opts = {}, dependencies = {
+      'echasnovski/mini.icons',
+    } },
     {
       'Shatur/neovim-ayu',
       priority = 1000,
@@ -187,6 +185,19 @@ if not package.loaded['lazy'] then
     {
       'navarasu/onedark.nvim',
       priority = 1000,
+    },
+    {
+      'sharpchen/Eva-Theme.nvim',
+      lazy = false,
+      priority = 1000,
+    },
+    {
+      'baliestri/aura-theme',
+      lazy = false,
+      priority = 1000,
+      config = function(plugin)
+        vim.opt.rtp:append(plugin.dir .. '/packages/neovim')
+      end,
     },
     {
       'nvim-neo-tree/neo-tree.nvim',
@@ -310,7 +321,7 @@ end
 
 -- Theme
 require 'personal.highlights'
-vim.cmd.colorscheme 'rose-pine'
+vim.cmd.colorscheme 'aura-dark'
 
 -- Autocommands
 local autocmds = require 'personal.autocommands'
@@ -769,6 +780,7 @@ local servers = {
   },
   pyright = {},
   templ = {},
+  intelephense ={},
   rust_analyzer = {
     ['rust-analyzer'] = {
       check = {
@@ -783,7 +795,7 @@ local servers = {
   kotlin_language_server = {},
   ast_grep = {},
   jdtls = {
-    ""
+    '',
   },
   --
   tailwindcss = {
